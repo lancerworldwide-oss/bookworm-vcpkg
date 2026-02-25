@@ -1,0 +1,6 @@
+.git
+.gitignore
+.gitattributes
+build
+vcpkg_installed
+*.tar.xz
