@@ -108,7 +108,6 @@ ENV VCPKG_FIXUP_ELF_RPATH=ON
 # Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
 COPY vcpkg.json vcpkg-configuration.json /tmp/
 COPY ports/ /tmp/ports/
-COPY scripts/vcpkg-install-with-failure-logs.sh /tmp/
 COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 
 # Precompile all dependencies for arm64-linux-dynamic

@@ -5,6 +5,10 @@
       "protobuf",
       "grpc",
       "date",
+      {
+        "name": "curl",
+        "features": [ "tool", "ssl" ]
+      },
       "fmt",
       "ftxui",
       "libarchive",
