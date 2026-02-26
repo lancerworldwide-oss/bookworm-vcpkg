@@ -111,13 +111,81 @@ COPY ports/ /tmp/ports/
 COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 
 # Precompile all dependencies for arm64-linux-dynamic
-WORKDIR /tmp
 RUN mkdir -p ${VCPKG_DEFAULT_BINARY_CACHE}
 
-RUN vcpkg install 2>&1 | tee /vcpkg-install-log.txt && rm -rf /tmp/*
+WORKDIR /tmp
+COPY vcpkg-configuration.json packages/zlib/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
 
-RUN chown -R user:user /opt/vcpkg \
-    && chmod -R 755 /opt/vcpkg
+COPY packages/brotli/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/openssl/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/nlohmann-json/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/fmt/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/stduuid/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/date/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/pugixml/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/tbb/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/spdlog/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/protobuf/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/grpc/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/curl/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/cpp-httplib/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/cpp-jwt/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/libarchive/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/libusb/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/nayuki-qr-code-generator/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/paho-mqtt/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/sdbus-cpp/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/sqlite3/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/ftxui/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+COPY packages/ms-gsl/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json
+
+
+#RUN chown -R user:user /opt/vcpkg \
+#    && chmod -R 755 /opt/vcpkg
 
 WORKDIR /workspace
 USER user

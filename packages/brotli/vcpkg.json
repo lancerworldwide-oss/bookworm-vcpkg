@@ -1,0 +1,16 @@
+{
+    "dependencies": [
+      "brotli"
+    ],
+    "overrides": [
+      {
+        "name": "cpp-httplib",
+        "version": "0.22.0"
+      },
+      {
+        "name": "gperf",
+        "version": "3.1#7"
+      }
+    ]
+  }
+  

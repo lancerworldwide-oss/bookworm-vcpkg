@@ -1,0 +1,39 @@
+{
+    "dependencies": [
+      "cpp-httplib",
+      "cpp-jwt",
+      "protobuf",
+      "grpc",
+      "date",
+      {
+        "name": "curl",
+        "features": [ "tool", "ssl" ]
+      },
+      "fmt",
+      "ftxui",
+      "libarchive",
+      "libusb",
+      "ms-gsl",
+      "nayuki-qr-code-generator",
+      "nlohmann-json",
+      "openssl",
+      "paho-mqtt",
+      "pugixml",
+      "sdbus-cpp",
+      "spdlog",
+      "sqlite3",
+      "stduuid",
+      "tbb"
+    ],
+    "overrides": [
+      {
+        "name": "cpp-httplib",
+        "version": "0.22.0"
+      },
+      {
+        "name": "gperf",
+        "version": "3.1#7"
+      }
+    ]
+  }
+  

@@ -1,0 +1,12 @@
+{
+    "dependencies": [
+      "cpp-httplib"
+    ],
+    "overrides": [
+      {
+        "name": "cpp-httplib",
+        "version": "0.22.0"
+      }
+    ]
+  }
+  
