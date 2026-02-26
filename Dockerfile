@@ -113,56 +113,9 @@ COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 
 # Precompile all dependencies for arm64-linux-dynamic
 WORKDIR /tmp
-RUN mkdir -p /opt/vcpkg/binary_cache
-# Symlink system gperf to where libsystemd expects it during cross-compilation
-RUN mkdir -p /tmp/vcpkg_installed/x64-linux/tools/gperf && ln -s /usr/bin/gperf /tmp/vcpkg_installed/x64-linux/tools/gperf/gperf
-# Ensure pkg-config finds arm64 libcap (prefer vcpkg, then arm64 sysroot) over host x86_64
-ENV PKG_CONFIG_LIBDIR="/opt/vcpkg/packages/libxcrypt_arm64-linux-dynamic/usr/local/lib/pkgconfig:/tmp/vcpkg_installed/arm64-linux-dynamic/lib/pkgconfig:/tmp/vcpkg_installed/arm64-linux-dynamic/debug/lib/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig"
+RUN mkdir -p ${VCPKG_DEFAULT_BINARY_CACHE}
 
-# On vcpkg failure, logs are copied to /vcpkg-logs (bind-mounted from ./vcpkg-logs in build context).
-# Requires BuildKit: DOCKER_BUILDKIT=1 docker build -t fu .
-RUN --mount=type=bind,source=./vcpkg-logs,target=/vcpkg-logs,rw \
-    chmod +x /tmp/vcpkg-install-with-failure-logs.sh && /tmp/vcpkg-install-with-failure-logs.sh
-#temp test start
-#WORKDIR /workspace
-#RUN vcpkg install openssl:arm64-linux-dynamic 
-#RUN vcpkg install openssl:x64-linux
-#
-#RUN vcpkg install abseil[core,cxx17]:arm64-linux-dynamic 
-#RUN vcpkg install abseil[core,cxx17]:x64-linux
-#
-#RUN vcpkg install c-ares:arm64-linux-dynamic
-#RUN vcpkg install c-ares:x64-linux
-#
-#RUN vcpkg install curl[tool,ssl]:arm64-linux-dynamic
-#RUN vcpkg install curl[tool,ssl]:x64-linux
-#
-#RUN vcpkg install paho-mqtt:arm64-linux-dynamic
-#RUN vcpkg install paho-mqtt:x64-linux
-#
-#RUN vcpkg install protobuf:arm64-linux-dynamic
-#RUN vcpkg install protobuf:x64-linux
-#
-#RUN vcpkg install grpc[codegen,core]:arm64-linux-dynamic
-#RUN vcpkg install grpc[codegen,core]:x64-linux
-#
-#
-#RUN vcpkg install cpp-jwt:arm64-linux-dynamic
-#RUN vcpkg install cpp-jwt:x64-linux
-#
-#RUN vcpkg install dbus[core,systemd]:arm64-linux-dynamic
-#RUN vcpkg install dbus[core,systemd]:x64-linux
-#
-#RUN vcpkg install sdbus-cpp:arm64-linux-dynamic
-#RUN vcpkg install sdbus-cpp:x64-linux
-#
-#RUN vcpkg install libusb:arm64-linux-dynamic
-#RUN vcpkg install libusb:x64-linux
-#
-#WORKDIR /tmp
-#RUN vcpkg install
-
-#temp test end
+RUN vcpkg install 2>&1 | tee /vcpkg-install-log.txt && rm -rf /tmp/*
 
 RUN chown -R user:user /opt/vcpkg \
     && chmod -R 755 /opt/vcpkg
