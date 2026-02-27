@@ -67,6 +67,7 @@ RUN dpkg --add-architecture arm64 && \
     python3-jinja2 \
     python3.11-venv \
     qemu-user-static \
+    ssh \
     software-properties-common \
     sudo \
     tar \
@@ -176,6 +177,18 @@ COPY packages/ftxui/vcpkg.json /tmp/
 RUN vcpkg install && rm -rf /tmp/vcpkg.json && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/ms-gsl/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+
+COPY packages/angelscript/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+
+COPY packages/cpptotp/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+
+COPY packages/libstatgrab/vcpkg.json /tmp/
+RUN vcpkg install && rm -rf /tmp/vcpkg.json && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+
+COPY packages/sentry-native/vcpkg.json /tmp/
 RUN vcpkg install && rm -rf /tmp/vcpkg.json && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 WORKDIR /workspace
