@@ -7,5 +7,5 @@ The container is used as a devcontainer base image for rapid development with pr
 Build (requires BuildKit; on vcpkg failure, logs are copied to `./vcpkg-logs/`):
 
 ```bash
-docker build -t fu .
+docker build -t ghcr.io/lancerworldwide-oss/bookworm-vcpkg:latest .
 ```
