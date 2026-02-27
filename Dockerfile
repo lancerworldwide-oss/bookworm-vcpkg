@@ -84,11 +84,6 @@ RUN groupadd -g 1000 user && \
 # Install vcpkg (shallow clone at baseline from vcpkg-configuration.json)
 ENV VCPKG_ROOT=/opt/vcpkg
 ARG VCPKG_BASELINE=4acadb7d732e662bbf130c4849be6d3a0aa6f6b9
-#RUN git init ${VCPKG_ROOT} && cd ${VCPKG_ROOT} \
-#    && git remote add origin https://github.com/microsoft/vcpkg.git \
-#    && git fetch --depth 1 origin ${VCPKG_BASELINE} \
-#    && git checkout FETCH_HEAD \
-#    && ${VCPKG_ROOT}/bootstrap-vcpkg.sh -disableMetrics
 
 RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT} && cd ${VCPKG_ROOT} && ./bootstrap-vcpkg.sh -disableMetrics
 
@@ -184,8 +179,8 @@ COPY packages/ms-gsl/vcpkg.json /tmp/
 RUN vcpkg install && rm -rf /tmp/vcpkg.json
 
 
-#RUN chown -R user:user /opt/vcpkg \
-#    && chmod -R 755 /opt/vcpkg
+RUN chown -R user:user /opt/vcpkg \
+    && chmod -R 755 /opt/vcpkg
 
 WORKDIR /workspace
 USER user
