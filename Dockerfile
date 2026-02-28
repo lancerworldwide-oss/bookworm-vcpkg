@@ -111,85 +111,82 @@ RUN mkdir -p ${VCPKG_DEFAULT_BINARY_CACHE}
 
 WORKDIR /tmp
 COPY vcpkg-configuration.json packages/zlib/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/brotli/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/openssl/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/nlohmann-json/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/fmt/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/stduuid/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/date/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/pugixml/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/tbb/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/spdlog/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/protobuf/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/grpc/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/curl/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/cpp-httplib/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/cpp-jwt/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/libarchive/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/libusb/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/nayuki-qr-code-generator/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/paho-mqtt/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/sdbus-cpp/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/sqlite3/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/ftxui/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/ms-gsl/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/angelscript/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/cpptotp/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/libstatgrab/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/sentry-native/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 WORKDIR /workspace
 USER user
