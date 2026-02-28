@@ -1,8 +1,8 @@
-vcpkg_from_git(
+vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
-    URL https://github.com/RavuAlHemio/cpptotp.git
-    REF "696f618aec5c97970dd0948fef11cf46f7dfa255"
-    FETCH_REF master
+    REPO RavuAlHemio/cpptotp
+    REF 696f618aec5c97970dd0948fef11cf46f7dfa255
+    SHA512 0
     PATCHES CMakeLists.patch
 )
 
