@@ -90,7 +90,7 @@ RUN groupadd -g 1000 user && \
 RUN wget https://apt.llvm.org/llvm.sh && \
     chmod +x llvm.sh && \
     ./llvm.sh 18 && \
-    apt install clang-format-18 clang-tidy-18 && \
+    apt install -y --no-install-recommends clang-format-18 clang-tidy-18 && \
     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
     update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
     rm -rf llvm.sh && \
