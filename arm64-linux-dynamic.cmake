@@ -10,3 +10,8 @@ set(CMAKE_SYSTEM_PROCESSOR aarch64)
 set(CMAKE_FIND_ROOT_PATH "/usr/aarch64-linux-gnu")
 set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
+
+# dbus cannot autodetect session socket dir when cross-compiling (vcpkg#40031)
+if(PORT STREQUAL "dbus")
+    set(VCPKG_CMAKE_CONFIGURE_OPTIONS "-DDBUS_SESSION_SOCKET_DIR=/tmp")
+endif()
