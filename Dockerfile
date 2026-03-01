@@ -51,8 +51,8 @@ RUN dpkg --add-architecture arm64 && \
     libudev-dev \
     libudev-dev:arm64 \
     libusb-1.0-0-dev:arm64 \
-    libx11-dev \
-    libx11-xcb-dev \
+    libx11-dev:arm64 \
+    libx11-xcb-dev:arm64 \
     libxext-dev \
     libxi-dev \
     libxkbcommon-dev \
@@ -73,6 +73,8 @@ RUN dpkg --add-architecture arm64 && \
     python3-jinja2 \
     python3.11-venv \
     qemu-user-static \
+    qt6-base-dev:arm64 \
+    qt6-webview-dev:arm64 \
     ssh \
     software-properties-common \
     sudo \
@@ -94,6 +96,11 @@ RUN wget https://apt.llvm.org/llvm.sh && \
     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
     update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
     rm -rf llvm.sh && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Node.js 22.x from NodeSource (includes npm and npx)
+RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
     rm -rf /var/lib/apt/lists/*
 
 # Install vcpkg (shallow clone at baseline from vcpkg-configuration.json)
