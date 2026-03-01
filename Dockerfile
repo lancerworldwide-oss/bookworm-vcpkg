@@ -19,10 +19,13 @@ RUN dpkg --add-architecture arm64 && \
     bison \
     build-essential \
     ca-certificates \
+    clazy \
     cmake \
+    cppcheck \
     curl \
     debhelper \
     debmake \
+    doxygen \
     flex \
     g++ \
     g++-aarch64-linux-gnu \
@@ -37,16 +40,17 @@ RUN dpkg --add-architecture arm64 && \
     libdrm-dev \
     libdrm-dev:arm64 \
     libcurl4-openssl-dev \
-    libdbus-1-dev \
+    libdbus-1-dev:arm64 \
     libegl1-mesa-dev \
     libglu1-mesa-dev \
     libgtest-dev \
     libiptc-dev \
     libltdl-dev \
-    libsystemd-dev \
+    libsystemd-dev:arm64 \
     libtool \
     libudev-dev \
     libudev-dev:arm64 \
+    libusb-1.0-0-dev:arm64 \
     libx11-dev \
     libx11-xcb-dev \
     libxext-dev \
@@ -63,6 +67,7 @@ RUN dpkg --add-architecture arm64 && \
     meson \
     ninja-build \
     pkg-config \
+    plantuml \
     python3 \
     python3-distutils \
     python3-jinja2 \
@@ -85,8 +90,9 @@ RUN groupadd -g 1000 user && \
 RUN wget https://apt.llvm.org/llvm.sh && \
     chmod +x llvm.sh && \
     ./llvm.sh 18 && \
-    apt install clang-format-18 && \
+    apt install clang-format-18 clang-tidy-18 && \
     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
+    update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
     rm -rf llvm.sh && \
     rm -rf /var/lib/apt/lists/*
 
