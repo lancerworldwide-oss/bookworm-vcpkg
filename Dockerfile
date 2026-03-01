@@ -31,6 +31,7 @@ RUN dpkg --add-architecture arm64 && \
     git \
     gnupg \
     gperf \
+    openjdk-17-jre-headless \
     libcap-dev \
     libcap-dev:arm64 \
     libdrm-dev \
@@ -81,6 +82,13 @@ RUN groupadd -g 1000 user && \
     useradd -m -u 1000 -g user -d /home/user -s /bin/bash user \
     && echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/user
 
+RUN wget https://apt.llvm.org/llvm.sh && \
+    chmod +x llvm.sh && \
+    ./llvm.sh 18 && \
+    apt install clang-format-18 && \
+    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
+    rm -rf llvm.sh && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install vcpkg (shallow clone at baseline from vcpkg-configuration.json)
 ENV VCPKG_ROOT=/opt/vcpkg
@@ -100,6 +108,8 @@ ENV VCPKG_CRT_LINKAGE=dynamic
 ENV VCPKG_LIBRARY_LINKAGE=dynamic
 ENV VCPKG_CMAKE_SYSTEM_NAME=Linux
 ENV VCPKG_FIXUP_ELF_RPATH=ON
+ENV VCPKG_DISABLE_METRICS=1
+ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
 # Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
 COPY vcpkg.json vcpkg-configuration.json /tmp/
