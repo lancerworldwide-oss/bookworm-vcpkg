@@ -16,7 +16,6 @@ RUN dpkg --add-architecture arm64 && \
     binfmt-support \
     binutils-aarch64-linux-gnu \
     bison \
-    build-essential \
     ca-certificates \
     clazy \
     cmake \
@@ -28,10 +27,13 @@ RUN dpkg --add-architecture arm64 && \
     flex \
     g++-aarch64-linux-gnu \
     gcc-aarch64-linux-gnu \
+    gcovr \
     git \
     gnupg \
     gperf \
+    graphviz \
     openjdk-17-jre-headless \
+    lcov \
     libc6-dev:arm64 \
     libcap-dev:arm64 \
     libdrm-dev:arm64 \
