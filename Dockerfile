@@ -37,7 +37,6 @@ RUN dpkg --add-architecture arm64 && \
     openjdk-17-jre-headless \
     libcap-dev \
     libcap-dev:arm64 \
-    libdrm-dev \
     libdrm-dev:arm64 \
     libcurl4-openssl-dev \
     libdbus-1-dev:arm64 \
@@ -48,18 +47,17 @@ RUN dpkg --add-architecture arm64 && \
     libltdl-dev \
     libsystemd-dev:arm64 \
     libtool \
-    libudev-dev \
     libudev-dev:arm64 \
     libusb-1.0-0-dev:arm64 \
     libx11-dev:arm64 \
     libx11-xcb-dev:arm64 \
-    libxext-dev \
+    libxext-dev:arm64 \
     libxi-dev \
     libxkbcommon-dev \
     libxkbcommon-x11-dev \
-    libxrandr-dev \
-    libxrender-dev \
-    libxss-dev \
+    libxrandr-dev:arm64 \
+    libxrender-dev:arm64 \
+    libxss-dev:arm64 \
     libxtables-dev \
     linux-libc-dev \
     lsb-release \
