@@ -75,6 +75,8 @@ RUN dpkg --add-architecture arm64 && \
     qemu-user-static \
     qt6-base-dev:arm64 \
     qt6-webview-dev:arm64 \
+    qt6-tools-dev \
+    qt6-tools-dev:arm64 \ 
     ssh \
     software-properties-common \
     sudo \
