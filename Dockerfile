@@ -16,6 +16,7 @@ RUN dpkg --add-architecture arm64 && \
     binfmt-support \
     binutils-aarch64-linux-gnu \
     bison \
+    build-essential \
     ca-certificates \
     clazy \
     cmake \
