@@ -125,7 +125,7 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
 # Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
-COPY vcpkg.json vcpkg-configuration.json /tmp/
+COPY vcpkg-configuration.json /tmp/
 COPY ports/ /tmp/ports/
 COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 
