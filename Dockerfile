@@ -133,8 +133,6 @@ COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 RUN mkdir -p ${VCPKG_DEFAULT_BINARY_CACHE}
 
 WORKDIR /tmp
-COPY vcpkg-configuration.json packages/zlib/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 COPY packages/brotli/vcpkg.json /tmp/
 RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
