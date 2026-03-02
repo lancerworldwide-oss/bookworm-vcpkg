@@ -80,6 +80,7 @@ RUN dpkg --add-architecture arm64 && \
     sudo \
     tar \
     unzip \
+    valgrind \
     wget \
     zip \
     && update-binfmts --enable \
