@@ -10,12 +10,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN dpkg --add-architecture arm64 && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-    '^libxcb.*-dev' \
     autoconf \
     autoconf-archive \
     automake \
     binfmt-support \
-    binutils \
+    binutils-aarch64-linux-gnu \
     bison \
     build-essential \
     ca-certificates \
@@ -27,24 +26,22 @@ RUN dpkg --add-architecture arm64 && \
     debmake \
     doxygen \
     flex \
-    g++ \
     g++-aarch64-linux-gnu \
-    gcc \
     gcc-aarch64-linux-gnu \
     git \
     gnupg \
     gperf \
     openjdk-17-jre-headless \
-    libcap-dev \
+    libc6-dev:arm64 \
     libcap-dev:arm64 \
     libdrm-dev:arm64 \
-    libcurl4-openssl-dev \
+    libcurl4-openssl-dev:arm64 \
     libdbus-1-dev:arm64 \
-    libegl1-mesa-dev \
-    libglu1-mesa-dev \
-    libgtest-dev \
-    libiptc-dev \
-    libltdl-dev \
+    libegl1-mesa-dev:arm64 \
+    libglu1-mesa-dev:arm64 \
+    libgtest-dev:arm64 \
+    libiptc-dev:arm64 \
+    libltdl-dev:arm64 \
     libsystemd-dev:arm64 \
     libtool \
     libudev-dev:arm64 \
@@ -52,14 +49,14 @@ RUN dpkg --add-architecture arm64 && \
     libx11-dev:arm64 \
     libx11-xcb-dev:arm64 \
     libxext-dev:arm64 \
-    libxi-dev \
-    libxkbcommon-dev \
+    libxi-dev:arm64 \
+    libxkbcommon-dev:arm64 \
     libxkbcommon-x11-dev \
     libxrandr-dev:arm64 \
     libxrender-dev:arm64 \
     libxss-dev:arm64 \
-    libxtables-dev \
-    linux-libc-dev \
+    libxtables-dev:arm64 \
+    linux-libc-dev:arm64 \
     lsb-release \
     make \
     meson \
