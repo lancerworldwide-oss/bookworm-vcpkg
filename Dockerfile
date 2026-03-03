@@ -47,6 +47,7 @@ RUN dpkg --add-architecture arm64 && \
     libltdl-dev:arm64 \
     libsystemd-dev:arm64 \
     libtool \
+    libudev-dev \
     libudev-dev:arm64 \
     libx11-dev:arm64 \
     libx11-xcb-dev:arm64 \
