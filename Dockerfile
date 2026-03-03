@@ -153,6 +153,16 @@ ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
 RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
+# Unset VCPKG_ build-time variables after install
+ENV VCPKG_CRT_LINKAGE= \
+    VCPKG_LIBRARY_LINKAGE= \
+    VCPKG_CMAKE_SYSTEM_NAME= \
+    VCPKG_FIXUP_ELF_RPATH= \
+    VCPKG_DISABLE_METRICS= \
+    VCPKG_DEFAULT_TRIPLET= \
+    VCPKG_TARGET_TRIPLET= \
+    VCPKG_FORCE_SYSTEM_BINARIES=
+
 WORKDIR /workspace
 USER user 
 
