@@ -137,7 +137,7 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=x64-linux
 ENV VCPKG_TARGET_TRIPLET=x64-linux
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
@@ -152,6 +152,6 @@ ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 WORKDIR /workspace
-USER user
+USER user 
 
 CMD ["/bin/bash"]
