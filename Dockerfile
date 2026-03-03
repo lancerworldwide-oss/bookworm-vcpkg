@@ -40,29 +40,50 @@ RUN dpkg --add-architecture arm64 && \
     openjdk-17-jre-headless \
     lcov \
     libc6-dev:arm64 \
+    libcap-dev \
     libcap-dev:arm64 \
+    libdrm-dev \
     libdrm-dev:arm64 \
+    libcurl4-openssl-dev \
     libcurl4-openssl-dev:arm64 \
+    libdbus-1-dev \
     libdbus-1-dev:arm64 \
+    libegl1-mesa-dev \
     libegl1-mesa-dev:arm64 \
+    libglu1-mesa-dev \
     libglu1-mesa-dev:arm64 \
+    libgtest-dev \
     libgtest-dev:arm64 \
+    libiptc-dev \
     libiptc-dev:arm64 \
+    libltdl-dev \
     libltdl-dev:arm64 \
+    libsystemd-dev \
     libsystemd-dev:arm64 \
     libtool \
     libudev-dev \
     libudev-dev:arm64 \
+    libx11-dev \
     libx11-dev:arm64 \
+    libx11-xcb-dev \
     libx11-xcb-dev:arm64 \
+    libxext-dev \
     libxext-dev:arm64 \
+    libxi-dev \
     libxi-dev:arm64 \
+    libxkbcommon-dev \
     libxkbcommon-dev:arm64 \
     libxkbcommon-x11-dev \
+    libxkbcommon-x11-dev:arm64 \
+    libxrandr-dev \
     libxrandr-dev:arm64 \
+    libxrender-dev \
     libxrender-dev:arm64 \
+    libxss-dev \
     libxss-dev:arm64 \
+    libxtables-dev \
     libxtables-dev:arm64 \
+    linux-libc-dev \
     linux-libc-dev:arm64 \
     lsb-release \
     make \
@@ -76,6 +97,8 @@ RUN dpkg --add-architecture arm64 && \
     python3.11-venv \
     qemu-user-static \
     qt6-base-dev:arm64 \
+    qt6-base-dev \
+    qt6-webview-dev \
     qt6-webview-dev:arm64 \
     qt6-tools-dev \
     qt6-tools-dev:arm64 \ 
