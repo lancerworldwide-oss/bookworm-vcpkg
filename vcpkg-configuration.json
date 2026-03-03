@@ -12,5 +12,5 @@
       "packages": [ "angelscript", "cpptotp", "libstatgrab" , "sentry-native" ]
     }
   ],
-  "overlay-ports": ["./ports"]
+  "overlay-ports": ["/home/user/.cache/vcpkg/overlay-ports"]
 }

@@ -122,12 +122,12 @@ RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT} && \
 ENV PATH="${VCPKG_ROOT}:${PATH}"
 
 # Binary cache for precompiled dependencies (used by devcontainer)
-ENV VCPKG_DEFAULT_BINARY_CACHE=/opt/vcpkg/binary_cache
-RUN mkdir -p ${VCPKG_DEFAULT_BINARY_CACHE}
+ENV VCPKG_DEFAULT_BINARY_CACHE=/home/user/.cache/vcpkg/archives
+RUN mkdir -p /home/user/.cache/vcpkg/archives /home/user/.cache/vcpkg/overlay-ports
 
 # Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
 COPY vcpkg.json vcpkg-configuration.json /tmp/
-COPY ports/ /tmp/ports/
+COPY ports/ /home/user/.cache/vcpkg/overlay-ports/
 COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 
 ENV VCPKG_TARGET_ARCHITECTURE=x64
@@ -139,7 +139,7 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=x64-linux
 ENV VCPKG_TARGET_TRIPLET=x64-linux
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
@@ -151,7 +151,7 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=arm64-linux-dynamic
 ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
 # Unset VCPKG_ build-time variables after install
 ENV VCPKG_CRT_LINKAGE= \
