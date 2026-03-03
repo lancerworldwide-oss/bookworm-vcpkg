@@ -6,6 +6,10 @@ FROM debian:bookworm-slim
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
+# X11 display forwarding to host (use with -p 6000:6000 when running)
+ENV DISPLAY=host.docker.internal:0
+EXPOSE 6000
+
 # Install build essentials, cross-compilation toolchain, and multiarch support
 RUN dpkg --add-architecture arm64 && \
     apt-get update && \

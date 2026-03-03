@@ -9,3 +9,9 @@ Build (requires BuildKit; on vcpkg failure, logs are copied to `./vcpkg-logs/`):
 ```bash
 docker build -t ghcr.io/lancerworldwide-oss/bookworm-vcpkg:latest .
 ```
+
+Run with X11 display forwarding to the host (forward port 6000 for X displays):
+
+```bash
+docker run -it -p 6000:6000 ghcr.io/lancerworldwide-oss/bookworm-vcpkg:latest
+```
