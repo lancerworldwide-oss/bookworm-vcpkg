@@ -110,10 +110,8 @@ WORKDIR /tmp
 ENV VCPKG_ROOT=/opt/vcpkg
 ARG VCPKG_BASELINE=4acadb7d732e662bbf130c4849be6d3a0aa6f6b9
 
-RUN mkdir -p ${VCPKG_ROOT} && cd ${VCPKG_ROOT} && \
-    git init && \
-    git remote add origin https://github.com/microsoft/vcpkg.git && \
-    git fetch --depth 1 origin ${VCPKG_BASELINE} && \
+RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT} && \
+    cd ${VCPKG_ROOT} && \
     git checkout ${VCPKG_BASELINE} && \
     ./bootstrap-vcpkg.sh -disableMetrics
 
