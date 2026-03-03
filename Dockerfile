@@ -103,18 +103,41 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y --no-install-recommends nodejs && \
     rm -rf /var/lib/apt/lists/*
 
+WORKDIR /tmp
+
 # Install vcpkg (shallow clone at baseline from vcpkg-configuration.json)
 ENV VCPKG_ROOT=/opt/vcpkg
 ARG VCPKG_BASELINE=4acadb7d732e662bbf130c4849be6d3a0aa6f6b9
 
-RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT} && cd ${VCPKG_ROOT} && ./bootstrap-vcpkg.sh -disableMetrics
+RUN mkdir -p ${VCPKG_ROOT} && cd ${VCPKG_ROOT} && \
+    git init && \
+    git remote add origin https://github.com/microsoft/vcpkg.git && \
+    git fetch --depth 1 origin ${VCPKG_BASELINE} && \
+    git checkout ${VCPKG_BASELINE} && \
+    ./bootstrap-vcpkg.sh -disableMetrics
 
 ENV PATH="${VCPKG_ROOT}:${PATH}"
 
 # Binary cache for precompiled dependencies (used by devcontainer)
 ENV VCPKG_DEFAULT_BINARY_CACHE=/opt/vcpkg/binary_cache
+RUN mkdir -p ${VCPKG_DEFAULT_BINARY_CACHE}
 
-ENV VCPKG_DEFAULT_TRIPLET=arm64-linux-dynamic
+# Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
+COPY vcpkg.json vcpkg-configuration.json /tmp/
+COPY ports/ /tmp/ports/
+COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
+
+ENV VCPKG_TARGET_ARCHITECTURE=x64
+ENV VCPKG_CRT_LINKAGE=static
+ENV VCPKG_LIBRARY_LINKAGE=static
+ENV VCPKG_CMAKE_SYSTEM_NAME=Linux
+ENV VCPKG_FIXUP_ELF_RPATH=ON
+ENV VCPKG_DISABLE_METRICS=1
+ENV VCPKG_DEFAULT_TRIPLET=x64-linux
+ENV VCPKG_TARGET_TRIPLET=x64-linux
+
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
+
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
 ENV VCPKG_CRT_LINKAGE=dynamic
@@ -122,91 +145,9 @@ ENV VCPKG_LIBRARY_LINKAGE=dynamic
 ENV VCPKG_CMAKE_SYSTEM_NAME=Linux
 ENV VCPKG_FIXUP_ELF_RPATH=ON
 ENV VCPKG_DISABLE_METRICS=1
+ENV VCPKG_DEFAULT_TRIPLET=arm64-linux-dynamic
 ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
-# Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
-COPY vcpkg-configuration.json /tmp/
-COPY ports/ /tmp/ports/
-COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
-
-# Precompile all dependencies for arm64-linux-dynamic
-RUN mkdir -p ${VCPKG_DEFAULT_BINARY_CACHE}
-
-WORKDIR /tmp
-
-COPY packages/brotli/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/openssl/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/nlohmann-json/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/fmt/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/stduuid/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/date/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/pugixml/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/tbb/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/spdlog/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/protobuf/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/grpc/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/curl/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/cpp-httplib/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/cpp-jwt/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/libarchive/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/libusb/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/nayuki-qr-code-generator/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/paho-mqtt/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/sdbus-cpp/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/sqlite3/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/ftxui/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/ms-gsl/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/angelscript/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/cpptotp/vcpkg.json /tmp/
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
-
-COPY packages/sentry-native/vcpkg.json /tmp/
 RUN vcpkg install --clean-buildtrees-after-build && rm -rf /opt/vcpkg/downloads/* /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg && chmod -R 755 /opt/vcpkg
 
 WORKDIR /workspace

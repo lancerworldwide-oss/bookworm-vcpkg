@@ -1,0 +1,66 @@
+{
+    "dependencies": [
+      "angelscript",
+      "cpp-httplib",
+      "cpptotp",
+      "cpp-jwt",
+      {
+        "name": "curl",
+        "features": [ "tool", "ssl" ]
+      },
+      "date",
+      "fmt",
+      "ftxui",
+      "grpc",
+      "libarchive",
+      "libstatgrab",
+      {
+        "name": "libsystemd",
+        "platform": "!windows"
+      },
+      "libusb",
+      "ms-gsl",
+      "nayuki-qr-code-generator",
+      "nlohmann-json",
+      "openssl",
+      "paho-mqtt",
+      "protobuf",
+      "pugixml",
+      {
+        "name": "qtbase",
+        "features": [ "gui", "widgets", "network" ],
+        "platform": "windows"
+      },
+      {
+        "name": "qtwebview",
+        "platform": "windows"
+      },
+      {
+        "name": "sdbus-cpp",
+        "platform": "!windows"
+      },
+      "spdlog",
+      "sqlite3",
+      "stduuid",
+      "tbb",
+      {
+        "name": "sentry-native",
+        "version>=": "0.8.5.1",
+        "features": [
+          "backend",
+          "transport"
+        ]
+      }
+    ],
+    "overrides": [
+      {
+        "name": "cpp-httplib",
+        "version": "0.22.0"
+      },
+      {
+        "name": "gperf",
+        "version": "3.1#7"
+      }
+    ]
+  }
+  
