@@ -123,7 +123,8 @@ ENV PATH="${VCPKG_ROOT}:${PATH}"
 
 # Binary cache for precompiled dependencies (used by devcontainer)
 ENV VCPKG_DEFAULT_BINARY_CACHE=/home/user/.cache/vcpkg/archives
-RUN mkdir -p /home/user/.cache/vcpkg/archives /home/user/.cache/vcpkg/overlay-ports
+ENV X_VCPKG_REGISTRIES_CACHE=/home/user/.cache/vcpkg/registries
+RUN mkdir -p /home/user/.cache/vcpkg/archives /home/user/.cache/vcpkg/overlay-ports /home/user/.cache/vcpkg/registries
 
 # Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
 COPY vcpkg.json vcpkg-configuration.json /tmp/
