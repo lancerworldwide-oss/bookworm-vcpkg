@@ -107,6 +107,8 @@ RUN dpkg --add-architecture arm64 && \
     sudo \
     tar \
     unzip \
+    gdb \
+    gdb-multiarch \
     valgrind \
     wget \
     zip \
