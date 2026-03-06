@@ -26,6 +26,7 @@ RUN dpkg --add-architecture arm64 && \
     cmake \
     cppcheck \
     curl \
+    dbus \
     debhelper \
     debmake \
     doxygen \
