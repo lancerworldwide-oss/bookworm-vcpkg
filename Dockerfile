@@ -8,7 +8,6 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # X11 display forwarding to host (use with -p 6000:6000 when running)
 ENV DISPLAY=host.docker.internal:0
-EXPOSE 6000
 
 # Install build essentials, cross-compilation toolchain, and multiarch support
 RUN dpkg --add-architecture arm64 && \
@@ -106,6 +105,8 @@ RUN dpkg --add-architecture arm64 && \
     ssh \
     software-properties-common \
     sudo \
+    systemd \
+    systemd-sysv \
     tar \
     unzip \
     gdb \
@@ -192,6 +193,9 @@ ENV VCPKG_CRT_LINKAGE= \
     VCPKG_TARGET_ARCHITECTURE=
 
 WORKDIR /workspace
-USER user 
 
-CMD ["/bin/bash"]
+VOLUME ["/run", "/run/lock"]
+
+VOLUME ["/sys/fs/cgroup"]
+
+CMD ["/sbin/init"]
