@@ -107,6 +107,7 @@ RUN dpkg --add-architecture arm64 && \
     sudo \
     systemd \
     systemd-sysv \
+    systemd-timesyncd \
     tar \
     unzip \
     gdb \
