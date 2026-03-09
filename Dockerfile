@@ -91,6 +91,7 @@ RUN dpkg --add-architecture arm64 && \
     ninja-build \
     pkg-config \
     plantuml \
+    policykit-1 \
     python3 \
     python3-distutils \
     python3-jinja2 \
@@ -121,6 +122,8 @@ RUN dpkg --add-architecture arm64 && \
 RUN groupadd -g 1000 user && \
     useradd -m -u 1000 -g user -d /home/user -s /bin/bash user \
     && echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/user
+
+RUN systemctl enable systemd-timedated    
 
 RUN wget https://apt.llvm.org/llvm.sh && \
     chmod +x llvm.sh && \
