@@ -115,6 +115,7 @@ RUN dpkg --add-architecture arm64 && \
     gdb-multiarch \
     valgrind \
     wget \
+    zlib1g-dev \
     zip \
     && update-binfmts --enable \
     && rm -rf /var/lib/apt/lists/*
@@ -128,10 +129,20 @@ RUN systemctl enable systemd-timedated
 RUN wget https://apt.llvm.org/llvm.sh && \
     chmod +x llvm.sh && \
     ./llvm.sh 18 && \
-    apt install -y --no-install-recommends clang-format-18 clang-tidy-18 && \
+    apt install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
+    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 && \
+    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-18 100 && \
     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
     update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
     rm -rf llvm.sh && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb && \
+    dpkg -i /tmp/packages-microsoft-prod.deb && \
+    rm /tmp/packages-microsoft-prod.deb && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends dotnet-sdk-10.0 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22.x from NodeSource (includes npm and npx)
