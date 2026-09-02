@@ -207,6 +207,26 @@ ENV VCPKG_CRT_LINKAGE= \
     VCPKG_FORCE_SYSTEM_BINARIES= \
     VCPKG_TARGET_ARCHITECTURE=
 
+# Dependencies for compiling cr-sqlite (https://github.com/vlcn-io/cr-sqlite)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libssl-dev \
+    tcl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Rust toolchain pinned to cr-sqlite's rust-toolchain.toml / CI channel
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:${PATH} \
+    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
+        --profile minimal \
+        --default-toolchain nightly-2023-10-05 \
+    && rustup component add rust-src rustfmt clippy \
+    && rustup target add aarch64-unknown-linux-gnu \
+    && chmod -R a+rwX /usr/local/rustup /usr/local/cargo
+
 WORKDIR /workspace
 
 VOLUME ["/run", "/run/lock"]
