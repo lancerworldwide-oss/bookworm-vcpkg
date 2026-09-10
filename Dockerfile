@@ -1,5 +1,5 @@
 # Raspberry Pi 5 cross-compilation devcontainer base image
-# Precompiles vcpkg dependencies for arm64-linux-dynamic triplet
+# Precompiles vcpkg dependencies for x64-linux, x64-mingw-dynamic, and arm64-linux-dynamic
 
 FROM debian:bookworm-slim
 
@@ -18,9 +18,11 @@ RUN dpkg --add-architecture arm64 && \
     automake \
     binfmt-support \
     binutils-aarch64-linux-gnu \
+    binutils-mingw-w64-x86-64 \
     bison \
     build-essential \
     ca-certificates \
+    ccache \
     clazy \
     cmake \
     cppcheck \
@@ -31,7 +33,9 @@ RUN dpkg --add-architecture arm64 && \
     doxygen \
     flex \
     g++-aarch64-linux-gnu \
+    g++-mingw-w64-x86-64 \
     gcc-aarch64-linux-gnu \
+    gcc-mingw-w64-x86-64 \
     gcovr \
     git \
     gnupg \
@@ -102,7 +106,7 @@ RUN dpkg --add-architecture arm64 && \
     qt6-webview-dev \
     qt6-webview-dev:arm64 \
     qt6-tools-dev \
-    qt6-tools-dev:arm64 \ 
+    qt6-tools-dev:arm64 \
     ssh \
     software-properties-common \
     sudo \
@@ -118,7 +122,18 @@ RUN dpkg --add-architecture arm64 && \
     zlib1g-dev \
     zip \
     && update-binfmts --enable \
+    && update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
+    && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix \
+    && ln -sf windows.h /usr/x86_64-w64-mingw32/include/Windows.h \
+    && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-gcc \
+    && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-g++ \
+    && ln -sf /usr/bin/ccache /usr/lib/ccache/x86_64-w64-mingw32-gcc \
+    && ln -sf /usr/bin/ccache /usr/lib/ccache/x86_64-w64-mingw32-g++ \
     && rm -rf /var/lib/apt/lists/*
+
+# Prefer ccache wrappers for native and cross compilers
+ENV PATH="/usr/lib/ccache:${PATH}"
+ENV CCACHE_DIR=/home/user/.cache/ccache
 
 RUN groupadd -g 1000 user && \
     useradd -m -u 1000 -g user -d /home/user -s /bin/bash user \
@@ -126,23 +141,32 @@ RUN groupadd -g 1000 user && \
 
 RUN systemctl enable systemd-timedated    
 
-RUN wget https://apt.llvm.org/llvm.sh && \
-    chmod +x llvm.sh && \
-    ./llvm.sh 18 && \
-    apt install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
-    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 && \
-    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 && \
-    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-18 100 && \
-    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
-    update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
-    rm -rf llvm.sh && \
-    rm -rf /var/lib/apt/lists/*
+# Native AOT / .NET components — commented out until re-enabled after testing
+# RUN wget https://apt.llvm.org/llvm.sh && \
+#     chmod +x llvm.sh && \
+#     ./llvm.sh 18 && \
+#     apt install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
+#     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 && \
+#     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 && \
+#     update-alternatives --install /usr/bin/lld lld /usr/bin/lld-18 100 && \
+#     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
+#     update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
+#     rm -rf llvm.sh && \
+#     rm -rf /var/lib/apt/lists/*
+#
+# RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb && \
+#     dpkg -i /tmp/packages-microsoft-prod.deb && \
+#     rm /tmp/packages-microsoft-prod.deb && \
+#     apt-get update && \
+#     apt-get install -y --no-install-recommends dotnet-sdk-10.0 && \
+#     rm -rf /var/lib/apt/lists/*
 
+# PowerShell (pwsh) from Microsoft Debian 12 feed
 RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb && \
     dpkg -i /tmp/packages-microsoft-prod.deb && \
     rm /tmp/packages-microsoft-prod.deb && \
     apt-get update && \
-    apt-get install -y --no-install-recommends dotnet-sdk-10.0 && \
+    apt-get install -y --no-install-recommends powershell && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22.x from NodeSource (includes npm and npx)
@@ -166,7 +190,7 @@ ENV PATH="${VCPKG_ROOT}:${PATH}"
 # Binary cache for precompiled dependencies (used by devcontainer)
 ENV VCPKG_DEFAULT_BINARY_CACHE=/home/user/.cache/vcpkg/archives
 ENV X_VCPKG_REGISTRIES_CACHE=/home/user/.cache/vcpkg/registries
-RUN mkdir -p /home/user/.cache/vcpkg/archives /home/user/.cache/vcpkg/overlay-ports /home/user/.cache/vcpkg/registries
+RUN mkdir -p /home/user/.cache/vcpkg/archives /home/user/.cache/vcpkg/overlay-ports /home/user/.cache/vcpkg/registries /home/user/.cache/ccache
 
 # Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
 COPY vcpkg.json vcpkg-configuration.json /tmp/
@@ -184,6 +208,17 @@ ENV VCPKG_TARGET_TRIPLET=x64-linux
 
 RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
+ENV VCPKG_TARGET_ARCHITECTURE=x64
+ENV VCPKG_CRT_LINKAGE=dynamic
+ENV VCPKG_LIBRARY_LINKAGE=dynamic
+ENV VCPKG_CMAKE_SYSTEM_NAME=MinGW
+ENV VCPKG_FIXUP_ELF_RPATH=
+ENV VCPKG_DISABLE_METRICS=1
+ENV VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic
+ENV VCPKG_TARGET_TRIPLET=x64-mingw-dynamic
+
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
+
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
 ENV VCPKG_CRT_LINKAGE=dynamic
@@ -194,7 +229,7 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=arm64-linux-dynamic
 ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg /home/user/.cache/ccache && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg /home/user/.cache/ccache && ccache -C
 
 # Unset VCPKG_ build-time variables after install
 ENV VCPKG_CRT_LINKAGE= \
