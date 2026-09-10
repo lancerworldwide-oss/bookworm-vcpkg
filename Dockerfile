@@ -62,6 +62,8 @@ RUN dpkg --add-architecture arm64 && \
     libiptc-dev:arm64 \
     libltdl-dev \
     libltdl-dev:arm64 \
+    '^libxcb.*-dev' \
+    '^libxcb.*-dev:arm64' \
     libsystemd-dev \
     libsystemd-dev:arm64 \
     libtool \
@@ -229,7 +231,7 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=arm64-linux-dynamic
 ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg /home/user/.cache/ccache && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg /home/user/.cache/ccache && ccache -C
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache && chmod -R 755 /opt/vcpkg /home/user/.cache && ccache -C
 
 # Unset VCPKG_ build-time variables after install
 ENV VCPKG_CRT_LINKAGE= \
