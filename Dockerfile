@@ -219,7 +219,17 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic
 ENV VCPKG_TARGET_TRIPLET=x64-mingw-dynamic
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build \
+    || (echo "===== vcpkg failure logs =====" \
+        && find /opt/vcpkg/buildtrees \( -name '*out.log' -o -name '*err.log' -o -name '*config*.log' \) | sort \
+        && for f in /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-out.log \
+                    /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-err.log \
+                    /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log \
+                    /tmp/vcpkg_installed/vcpkg/issue_body.md; do \
+             [ -f "$f" ] && echo "===== $f =====" && tail -n 200 "$f"; \
+           done \
+        && false) \
+    && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
