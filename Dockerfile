@@ -128,8 +128,13 @@ RUN dpkg --add-architecture arm64 && \
     && update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
     && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix \
     && ln -sf windows.h /usr/x86_64-w64-mingw32/include/Windows.h \
-    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-gcc-posix "$@" -fno-stack-clash-protection\n' > /usr/local/bin/x86_64-w64-mingw32-gcc \
-    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-g++-posix "$@" -fno-stack-clash-protection\n' > /usr/local/bin/x86_64-w64-mingw32-g++ \
+    && mv /usr/bin/x86_64-w64-mingw32-gcc-posix /usr/bin/x86_64-w64-mingw32-gcc-posix.bin \
+    && mv /usr/bin/x86_64-w64-mingw32-g++-posix /usr/bin/x86_64-w64-mingw32-g++-posix.bin \
+    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-gcc-posix.bin "$@" -fno-stack-clash-protection\n' > /usr/bin/x86_64-w64-mingw32-gcc-posix \
+    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-g++-posix.bin "$@" -fno-stack-clash-protection\n' > /usr/bin/x86_64-w64-mingw32-g++-posix \
+    && chmod +x /usr/bin/x86_64-w64-mingw32-gcc-posix /usr/bin/x86_64-w64-mingw32-g++-posix \
+    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-gcc-posix "$@"\n' > /usr/local/bin/x86_64-w64-mingw32-gcc \
+    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-g++-posix "$@"\n' > /usr/local/bin/x86_64-w64-mingw32-g++ \
     && chmod +x /usr/local/bin/x86_64-w64-mingw32-gcc /usr/local/bin/x86_64-w64-mingw32-g++ \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-gcc \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-g++ \
@@ -220,6 +225,11 @@ RUN vcpkg install --clean-buildtrees-after-build \
                     /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log; do \
              [ -f "$f" ] && echo "===== $f =====" && tail -n 200 "$f"; \
            done \
+        && echo "===== ICE / stack-clash markers =====" \
+        && grep -E 'internal compiler error|fstack-clash|fno-stack-clash' \
+            /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-out.log \
+            /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-err.log \
+            2>/dev/null | tail -n 50 || true \
         && [ -f /tmp/vcpkg_installed/vcpkg/issue_body.md ] \
             && echo "===== /tmp/vcpkg_installed/vcpkg/issue_body.md =====" \
             && cat /tmp/vcpkg_installed/vcpkg/issue_body.md \
