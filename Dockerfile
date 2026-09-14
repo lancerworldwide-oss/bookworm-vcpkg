@@ -128,6 +128,9 @@ RUN dpkg --add-architecture arm64 && \
     && update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
     && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix \
     && ln -sf windows.h /usr/x86_64-w64-mingw32/include/Windows.h \
+    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-gcc-posix "$@" -fno-stack-clash-protection\n' > /usr/local/bin/x86_64-w64-mingw32-gcc \
+    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-g++-posix "$@" -fno-stack-clash-protection\n' > /usr/local/bin/x86_64-w64-mingw32-g++ \
+    && chmod +x /usr/local/bin/x86_64-w64-mingw32-gcc /usr/local/bin/x86_64-w64-mingw32-g++ \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-gcc \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-g++ \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/x86_64-w64-mingw32-gcc \
