@@ -199,16 +199,6 @@ COPY vcpkg.json vcpkg-configuration.json /tmp/
 COPY ports/ /home/user/.cache/vcpkg/overlay-ports/
 COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 
-ENV VCPKG_TARGET_ARCHITECTURE=x64
-ENV VCPKG_CRT_LINKAGE=static
-ENV VCPKG_LIBRARY_LINKAGE=static
-ENV VCPKG_CMAKE_SYSTEM_NAME=Linux
-ENV VCPKG_FIXUP_ELF_RPATH=ON
-ENV VCPKG_DISABLE_METRICS=1
-ENV VCPKG_DEFAULT_TRIPLET=x64-linux
-ENV VCPKG_TARGET_TRIPLET=x64-linux
-
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
 ENV VCPKG_TARGET_ARCHITECTURE=x64
 ENV VCPKG_CRT_LINKAGE=dynamic
@@ -230,6 +220,18 @@ RUN vcpkg install --clean-buildtrees-after-build \
            done \
         && false) \
     && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
+
+
+ENV VCPKG_TARGET_ARCHITECTURE=x64
+ENV VCPKG_CRT_LINKAGE=static
+ENV VCPKG_LIBRARY_LINKAGE=static
+ENV VCPKG_CMAKE_SYSTEM_NAME=Linux
+ENV VCPKG_FIXUP_ELF_RPATH=ON
+ENV VCPKG_DISABLE_METRICS=1
+ENV VCPKG_DEFAULT_TRIPLET=x64-linux
+ENV VCPKG_TARGET_TRIPLET=x64-linux
+
+RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
