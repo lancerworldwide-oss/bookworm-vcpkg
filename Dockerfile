@@ -95,6 +95,7 @@ RUN dpkg --add-architecture arm64 && \
     make \
     meson \
     ninja-build \
+    patchelf \
     pkg-config \
     plantuml \
     policykit-1 \
@@ -211,13 +212,14 @@ ENV VCPKG_TARGET_TRIPLET=x64-mingw-dynamic
 
 RUN vcpkg install --clean-buildtrees-after-build \
     || (echo "===== vcpkg failure logs =====" \
-        && find /opt/vcpkg/buildtrees \( -name '*out.log' -o -name '*err.log' -o -name '*config*.log' \) | sort \
         && for f in /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-out.log \
                     /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-err.log \
-                    /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log \
-                    /tmp/vcpkg_installed/vcpkg/issue_body.md; do \
+                    /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log; do \
              [ -f "$f" ] && echo "===== $f =====" && tail -n 200 "$f"; \
            done \
+        && [ -f /tmp/vcpkg_installed/vcpkg/issue_body.md ] \
+            && echo "===== /tmp/vcpkg_installed/vcpkg/issue_body.md =====" \
+            && cat /tmp/vcpkg_installed/vcpkg/issue_body.md \
         && false) \
     && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
