@@ -128,6 +128,7 @@ RUN dpkg --add-architecture arm64 && \
     && update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
     && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix \
     && ln -sf windows.h /usr/x86_64-w64-mingw32/include/Windows.h \
+    && sed -i 's/VARIANT new)/VARIANT newValue)/g' /usr/share/mingw-w64/include/uiautomationcoreapi.h \
     && mv /usr/bin/x86_64-w64-mingw32-gcc-posix /usr/bin/x86_64-w64-mingw32-gcc-posix.bin \
     && mv /usr/bin/x86_64-w64-mingw32-g++-posix /usr/bin/x86_64-w64-mingw32-g++-posix.bin \
     && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-gcc-posix.bin "$@" -fno-stack-clash-protection -fno-stack-protector\n' > /usr/bin/x86_64-w64-mingw32-gcc-posix \
