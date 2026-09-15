@@ -217,25 +217,29 @@ ENV VCPKG_FIXUP_ELF_RPATH=
 ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic
 ENV VCPKG_TARGET_TRIPLET=x64-mingw-dynamic
+# Cap parallelism: Debug Qt DLL links are huge; -j5 OOMs / buries FAILED: above tail dumps.
+ENV VCPKG_MAX_CONCURRENCY=2
 
 RUN vcpkg install --clean-buildtrees-after-build \
     || (echo "===== vcpkg failure logs =====" \
         && for f in /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-out.log \
                     /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-err.log \
                     /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log; do \
-             [ -f "$f" ] && echo "===== $f =====" && tail -n 200 "$f"; \
+             if [ -f "$f" ]; then \
+               echo "===== FAILED / linker errors in $f =====" \
+               && grep -nE 'FAILED:|undefined reference|collect2:|error: ld|internal compiler error|__stack_chk_|No space left|Killed' "$f" \
+                    | tail -n 80 || true \
+               && echo "===== tail $f =====" \
+               && tail -n 80 "$f"; \
+             fi; \
            done \
-        && echo "===== ICE / stack-clash / stack-protector markers =====" \
-        && grep -E 'internal compiler error|fstack-clash|fno-stack-clash|fstack-protector|fno-stack-protector|__stack_chk_' \
-            /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-out.log \
-            /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-err.log \
-            2>/dev/null | tail -n 50 || true \
         && [ -f /tmp/vcpkg_installed/vcpkg/issue_body.md ] \
             && echo "===== /tmp/vcpkg_installed/vcpkg/issue_body.md =====" \
             && cat /tmp/vcpkg_installed/vcpkg/issue_body.md \
         && false) \
     && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
+ENV VCPKG_MAX_CONCURRENCY=
 
 ENV VCPKG_TARGET_ARCHITECTURE=x64
 ENV VCPKG_CRT_LINKAGE=static
