@@ -226,10 +226,13 @@ RUN vcpkg install --clean-buildtrees-after-build \
     || (echo "===== vcpkg failure logs =====" \
         && for f in /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-out.log \
                     /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-err.log \
-                    /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log; do \
+                    /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-rel-out.log \
+                    /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log \
+                    /opt/vcpkg/buildtrees/qtlanguageserver/install-x64-mingw-dynamic-dbg-out.log \
+                    /opt/vcpkg/buildtrees/qtlanguageserver/install-x64-mingw-dynamic-rel-out.log; do \
              if [ -f "$f" ]; then \
                echo "===== FAILED / linker errors in $f =====" \
-               && grep -nE 'FAILED:|undefined reference|collect2:|error: ld|error: expected|internal compiler error|__stack_chk_|No space left|Killed|uiautomation' "$f" \
+               && grep -nE 'FAILED:|undefined reference|collect2:|error: ld|error: expected|string table overflow|file too big|internal compiler error|__stack_chk_|No space left|Killed|uiautomation' "$f" \
                     | tail -n 80 || true \
                && echo "===== tail $f =====" \
                && tail -n 80 "$f"; \
