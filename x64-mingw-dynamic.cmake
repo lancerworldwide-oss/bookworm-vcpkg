@@ -1,0 +1,13 @@
+set(VCPKG_TARGET_ARCHITECTURE x64)
+set(VCPKG_CRT_LINKAGE dynamic)
+set(VCPKG_LIBRARY_LINKAGE dynamic)
+set(VCPKG_ENV_PASSTHROUGH PATH)
+
+set(VCPKG_CMAKE_SYSTEM_NAME MinGW)
+set(VCPKG_POLICY_DLLS_WITHOUT_LIBS enabled)
+
+# Bookworm mingw-w64 headers lack ISelectionProvider; Qt 6.9's MinGW UI Automation
+# shim then fails with "expected class-name" in qwindowsuiautomation.h.
+if(PORT STREQUAL "qtbase" OR PORT STREQUAL "qtwebview")
+    set(VCPKG_CMAKE_CONFIGURE_OPTIONS "-DFEATURE_accessibility=OFF")
+endif()
