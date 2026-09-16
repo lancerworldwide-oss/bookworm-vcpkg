@@ -1,7 +1,7 @@
 # Raspberry Pi 5 cross-compilation devcontainer base image
 # Precompiles vcpkg dependencies for x64-linux, x64-mingw-dynamic, and arm64-linux-dynamic
 
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim AS base
 
 # Prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -210,6 +210,8 @@ COPY ports/ /home/user/.cache/vcpkg/overlay-ports/
 COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
 COPY x64-mingw-dynamic.cmake /opt/vcpkg/triplets/community/
 
+# ---- Stage: mingw (also builds host x64-linux tools for Qt) ----
+FROM base AS mingw
 
 ENV VCPKG_TARGET_ARCHITECTURE=x64
 ENV VCPKG_CRT_LINKAGE=dynamic
@@ -219,17 +221,16 @@ ENV VCPKG_FIXUP_ELF_RPATH=
 ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic
 ENV VCPKG_TARGET_TRIPLET=x64-mingw-dynamic
-# Cap parallelism: Debug Qt DLL links are huge; -j5 OOMs / buries FAILED: above tail dumps.
-ENV VCPKG_MAX_CONCURRENCY=2
+# Release for this pass so host linux Qt deps stay under GHA's 6h job limit.
+ENV VCPKG_BUILD_TYPE=release
 
 RUN vcpkg install --clean-buildtrees-after-build \
     || (echo "===== vcpkg failure logs =====" \
-        && for f in /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-out.log \
-                    /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-dbg-err.log \
-                    /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-rel-out.log \
+        && for f in /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-rel-out.log \
                     /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log \
-                    /opt/vcpkg/buildtrees/qtlanguageserver/install-x64-mingw-dynamic-dbg-out.log \
-                    /opt/vcpkg/buildtrees/qtlanguageserver/install-x64-mingw-dynamic-rel-out.log; do \
+                    /opt/vcpkg/buildtrees/qtlanguageserver/install-x64-mingw-dynamic-rel-out.log \
+                    /opt/vcpkg/buildtrees/qtdeclarative/install-x64-linux-rel-out.log \
+                    /opt/vcpkg/buildtrees/qtdeclarative/install-x64-mingw-dynamic-rel-out.log; do \
              if [ -f "$f" ]; then \
                echo "===== FAILED / linker errors in $f =====" \
                && grep -nE 'FAILED:|undefined reference|collect2:|error: ld|error: expected|string table overflow|file too big|internal compiler error|__stack_chk_|No space left|Killed|uiautomation' "$f" \
@@ -244,7 +245,10 @@ RUN vcpkg install --clean-buildtrees-after-build \
         && false) \
     && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
-ENV VCPKG_MAX_CONCURRENCY=
+ENV VCPKG_BUILD_TYPE=
+
+# ---- Stage: native x64-linux deps ----
+FROM mingw AS x64-linux
 
 ENV VCPKG_TARGET_ARCHITECTURE=x64
 ENV VCPKG_CRT_LINKAGE=static
@@ -256,6 +260,9 @@ ENV VCPKG_DEFAULT_TRIPLET=x64-linux
 ENV VCPKG_TARGET_TRIPLET=x64-linux
 
 RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
+
+# ---- Stage: final image with arm64-linux-dynamic ----
+FROM x64-linux AS final
 
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
