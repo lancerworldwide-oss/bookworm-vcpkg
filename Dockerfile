@@ -223,6 +223,8 @@ ENV VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic
 ENV VCPKG_TARGET_TRIPLET=x64-mingw-dynamic
 # Release for this pass so host linux Qt deps stay under GHA's 6h job limit.
 ENV VCPKG_BUILD_TYPE=release
+# Cap parallelism: uncapped -j on GHA OOMs / drops the runner mid Qt link.
+ENV VCPKG_MAX_CONCURRENCY=3
 
 RUN vcpkg install --clean-buildtrees-after-build \
     || (echo "===== vcpkg failure logs =====" \
@@ -246,6 +248,7 @@ RUN vcpkg install --clean-buildtrees-after-build \
     && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
 
 ENV VCPKG_BUILD_TYPE=
+ENV VCPKG_MAX_CONCURRENCY=
 
 # ---- Stage: native x64-linux deps ----
 FROM mingw AS x64-linux

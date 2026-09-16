@@ -38,7 +38,17 @@ jobs:
           dotnet: true
           haskell: true
           large-packages: true
-          swap-storage: true
+          # Keep swap: removing it makes long Qt/vcpkg Docker builds OOM the runner.
+          swap-storage: false
+
+      - name: Ensure swap for Qt link peaks
+        run: |
+          sudo swapoff -a || true
+          sudo fallocate -l 16G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
 
       - uses: docker/login-action@v3
         with:
@@ -65,10 +75,14 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # Avoid mode=max GHA export of multi-GB layers (starves runner network/RAM).
+          # Registry push + sha tag is the handoff to the next job.
+          provenance: false
+          sbom: false
           cache-from: |
             type=gha,scope=mingw
             type=registry,ref=ghcr.io/${{ env.IMAGE_NAME }}:ci-mingw
-          cache-to: type=gha,scope=mingw,mode=max
+          cache-to: type=gha,scope=mingw,mode=min
           build-args: |
             BUILDKIT_INLINE_CACHE=1
 
@@ -93,7 +107,16 @@ jobs:
           dotnet: true
           haskell: true
           large-packages: true
-          swap-storage: true
+          swap-storage: false
+
+      - name: Ensure swap for Qt link peaks
+        run: |
+          sudo swapoff -a || true
+          sudo fallocate -l 16G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
 
       - uses: docker/login-action@v3
         with:
@@ -122,10 +145,12 @@ jobs:
           # Reuse the pushed mingw stage as this job's mingw FROM (do not rebuild).
           build-contexts: |
             mingw=docker-image://ghcr.io/${{ env.IMAGE_NAME }}:ci-mingw-${{ github.sha }}
+          provenance: false
+          sbom: false
           cache-from: |
             type=gha,scope=x64-linux
             type=registry,ref=ghcr.io/${{ env.IMAGE_NAME }}:ci-x64-linux
-          cache-to: type=gha,scope=x64-linux,mode=max
+          cache-to: type=gha,scope=x64-linux,mode=min
           build-args: |
             BUILDKIT_INLINE_CACHE=1
 
@@ -150,7 +175,16 @@ jobs:
           dotnet: true
           haskell: true
           large-packages: true
-          swap-storage: true
+          swap-storage: false
+
+      - name: Ensure swap for Qt link peaks
+        run: |
+          sudo swapoff -a || true
+          sudo fallocate -l 16G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=16384
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+          free -h
 
       - uses: docker/login-action@v3
         with:
@@ -183,10 +217,12 @@ jobs:
           # Continue from the pushed x64-linux stage.
           build-contexts: |
             x64-linux=docker-image://ghcr.io/${{ env.IMAGE_NAME }}:ci-x64-linux-${{ github.sha }}
+          provenance: false
+          sbom: false
           cache-from: |
             type=gha,scope=final
             type=registry,ref=ghcr.io/${{ env.IMAGE_NAME }}:latest
-          cache-to: type=gha,scope=final,mode=max
+          cache-to: type=gha,scope=final,mode=min
           build-args: |
             BUILDKIT_INLINE_CACHE=1
 
