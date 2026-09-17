@@ -40,7 +40,6 @@
       "imgui",
       "imgui-node-editor",
       "imguizmo",
-      "hello-imgui",
       "implot",
       {
         "name": "libarchive",
