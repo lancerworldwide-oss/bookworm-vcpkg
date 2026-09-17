@@ -1,52 +1,116 @@
 {
     "dependencies": [
-      "angelscript",
-      "cpp-httplib",
-      "cpptotp",
-      "cpp-jwt",
+      {
+        "name": "angelscript",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "cpp-httplib",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "cpptotp",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "cpp-jwt",
+        "platform": "!emscripten"
+      },
       {
         "name": "curl",
-        "features": [ "tool", "ssl" ]
+        "features": [ "tool", "ssl" ],
+        "platform": "!emscripten"
       },
-      "date",
-      "fmt",
-      "ftxui",
-      "grpc",
-      "libarchive",
+      {
+        "name": "date",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "fmt",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "ftxui",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "grpc",
+        "platform": "!emscripten"
+      },
+      "imgui",
+      "imgui-node-editor",
+      "imguizmo",
+      "hello-imgui",
+      "implot",
+      {
+        "name": "libarchive",
+        "platform": "!emscripten"
+      },
       {
         "name": "libstatgrab",
         "platform": "!emscripten"
       },
       {
         "name": "libsystemd",
-        "platform": "linux"
+        "platform": "linux & !emscripten"
       },
       {
         "name": "libusb",
         "platform": "!emscripten"
       },
-      "ms-gsl",
-      "nayuki-qr-code-generator",
-      "nlohmann-json",
-      "openssl",
-      "paho-mqtt",
-      "protobuf",
-      "pugixml",
+      {
+        "name": "ms-gsl",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "nayuki-qr-code-generator",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "nlohmann-json",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "openssl",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "paho-mqtt",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "protobuf",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "pugixml",
+        "platform": "!emscripten"
+      },
       {
         "name": "sdbus-cpp",
-        "platform": "linux"
+        "platform": "linux & !emscripten"
       },
-      "spdlog",
+      {
+        "name": "spdlog",
+        "platform": "!emscripten"
+      },
       {
         "name": "sqlite3",
         "features": [
           "json1",
           "session",
           "snapshot"
-        ]
+        ],
+        "platform": "!emscripten"
       },
-      "stduuid",
-      "tbb",
+      {
+        "name": "stduuid",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "tbb",
+        "platform": "!emscripten"
+      },
       {
         "name": "sentry-native",
         "version>=": "0.8.5.1",
