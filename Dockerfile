@@ -208,7 +208,7 @@ COPY arm64-linux-dynamic.cmake /home/user/vcpkg/triplets/community/
 COPY wasm32-emscripten.cmake /home/user/vcpkg/triplets/community/
 
 RUN chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache && \
-    chmod -R 755 /home/user/vcpkg /home/user/.cache/vcpkg
+    chmod -R 755 /home/user/vcpkg /home/user/.cache
 
 # ---- Stage: native x64-linux deps (also produces host tools for later stages) ----
 FROM base AS x64-linux
@@ -224,8 +224,8 @@ ENV VCPKG_TARGET_TRIPLET=x64-linux
 
 RUN vcpkg install --clean-buildtrees-after-build && \
     rm -rf /tmp/vcpkg_installed && \
-    chown -R user:user /home/user/vcpkg /home/user/.cache/vcpkg && \
-    chmod -R 755 /home/user/vcpkg /home/user/.cache/vcpkg
+    chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache && \
+    chmod -R 755 /home/user/vcpkg /home/user/.cache
 
 # ---- Stage: wasm32-emscripten deps ----
 FROM x64-linux AS wasm
@@ -238,36 +238,12 @@ ENV VCPKG_FIXUP_ELF_RPATH=
 ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=wasm32-emscripten
 ENV VCPKG_TARGET_TRIPLET=wasm32-emscripten
-ENV VCPKG_MAX_CONCURRENCY=3
 
 RUN . /home/user/emsdk/emsdk_env.sh && \
-    vcpkg install --clean-buildtrees-after-build \
-    || (echo "===== vcpkg failure logs =====" \
-        && if [ -f /tmp/vcpkg_installed/vcpkg/issue_body.md ]; then \
-             echo "===== /tmp/vcpkg_installed/vcpkg/issue_body.md =====" \
-             && cat /tmp/vcpkg_installed/vcpkg/issue_body.md; \
-           fi \
-        && for f in /home/user/vcpkg/buildtrees/*/install-wasm32-emscripten-*-out.log \
-                    /home/user/vcpkg/buildtrees/*/config-wasm32-emscripten-out.log; do \
-             if [ -f "$f" ]; then \
-               echo "===== FAILED / errors in $f =====" \
-               && grep -nE 'FAILED:|error:|undefined reference|Killed|No space left|FATAL_ERROR' "$f" \
-                    | tail -n 80 || true \
-               && echo "===== tail $f =====" \
-               && tail -n 80 "$f"; \
-             fi; \
-           done \
-        && false) \
-    && if vcpkg list | grep -qiE '^qt'; then \
-         echo "Qt must not be installed for wasm32-emscripten" \
-         && vcpkg list \
-         && exit 1; \
-       fi \
-    && rm -rf /tmp/vcpkg_installed \
-    && chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache \
-    && chmod -R 755 /home/user/vcpkg /home/user/.cache/vcpkg
-
-ENV VCPKG_MAX_CONCURRENCY=
+    vcpkg install --clean-buildtrees-after-build && \
+    rm -rf /tmp/vcpkg_installed && \
+    chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache && \
+    chmod -R 755 /home/user/vcpkg /home/user/.cache
 
 # ---- Stage: final image with arm64-linux-dynamic ----
 FROM wasm AS final
