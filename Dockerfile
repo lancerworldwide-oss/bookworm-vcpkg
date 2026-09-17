@@ -138,17 +138,6 @@ RUN groupadd -g 1000 user && \
 RUN systemctl enable systemd-timedated
 
 # Native AOT / .NET components — commented out until re-enabled after testing
-# RUN wget https://apt.llvm.org/llvm.sh && \
-#     chmod +x llvm.sh && \
-#     ./llvm.sh 18 && \
-#     apt install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
-#     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 && \
-#     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 && \
-#     update-alternatives --install /usr/bin/lld lld /usr/bin/lld-18 100 && \
-#     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
-#     update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
-#     rm -rf llvm.sh && \
-#     rm -rf /var/lib/apt/lists/*
 #
 # RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb && \
 #     dpkg -i /tmp/packages-microsoft-prod.deb && \
@@ -263,6 +252,18 @@ RUN vcpkg install --clean-buildtrees-after-build && \
     chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache && \
     ccache -C
+    
+RUN wget https://apt.llvm.org/llvm.sh && \
+    chmod +x llvm.sh && \
+    ./llvm.sh 18 && \
+    apt install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
+    update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 && \
+    update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 && \
+    update-alternatives --install /usr/bin/lld lld /usr/bin/lld-18 100 && \
+    update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
+    update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
+    rm -rf llvm.sh && \
+    rm -rf /var/lib/apt/lists/*
 
 # Unset VCPKG_ build-time variables after install
 ENV VCPKG_CRT_LINKAGE= \
