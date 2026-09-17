@@ -13,12 +13,18 @@
       "ftxui",
       "grpc",
       "libarchive",
-      "libstatgrab",
+      {
+        "name": "libstatgrab",
+        "platform": "!emscripten"
+      },
       {
         "name": "libsystemd",
-        "platform": "!windows"
+        "platform": "linux"
       },
-      "libusb",
+      {
+        "name": "libusb",
+        "platform": "!emscripten"
+      },
       "ms-gsl",
       "nayuki-qr-code-generator",
       "nlohmann-json",
@@ -27,17 +33,8 @@
       "protobuf",
       "pugixml",
       {
-        "name": "qtbase",
-        "features": [ "gui", "widgets", "network" ],
-        "platform": "windows"
-      },
-      {
-        "name": "qtwebview",
-        "platform": "windows"
-      },
-      {
         "name": "sdbus-cpp",
-        "platform": "!windows"
+        "platform": "linux"
       },
       "spdlog",
       {
@@ -53,6 +50,7 @@
       {
         "name": "sentry-native",
         "version>=": "0.8.5.1",
+        "platform": "!emscripten",
         "features": [
           "backend",
           "transport"
@@ -70,4 +68,3 @@
       }
     ]
   }
-  

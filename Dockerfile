@@ -1,5 +1,5 @@
 # Raspberry Pi 5 cross-compilation devcontainer base image
-# Precompiles vcpkg dependencies for x64-linux, x64-mingw-dynamic, and arm64-linux-dynamic
+# Precompiles vcpkg dependencies for x64-linux, wasm32-emscripten, and arm64-linux-dynamic
 
 FROM debian:bookworm-slim AS base
 
@@ -18,7 +18,6 @@ RUN dpkg --add-architecture arm64 && \
     automake \
     binfmt-support \
     binutils-aarch64-linux-gnu \
-    binutils-mingw-w64-x86-64 \
     bison \
     build-essential \
     ca-certificates \
@@ -33,9 +32,7 @@ RUN dpkg --add-architecture arm64 && \
     doxygen \
     flex \
     g++-aarch64-linux-gnu \
-    g++-mingw-w64-x86-64 \
     gcc-aarch64-linux-gnu \
-    gcc-mingw-w64-x86-64 \
     gcovr \
     git \
     gnupg \
@@ -122,25 +119,12 @@ RUN dpkg --add-architecture arm64 && \
     gdb-multiarch \
     valgrind \
     wget \
+    xz-utils \
     zlib1g-dev \
     zip \
     && update-binfmts --enable \
-    && update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix \
-    && update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix \
-    && ln -sf windows.h /usr/x86_64-w64-mingw32/include/Windows.h \
-    && sed -i 's/VARIANT new)/VARIANT newValue)/g' /usr/share/mingw-w64/include/uiautomationcoreapi.h \
-    && mv /usr/bin/x86_64-w64-mingw32-gcc-posix /usr/bin/x86_64-w64-mingw32-gcc-posix.bin \
-    && mv /usr/bin/x86_64-w64-mingw32-g++-posix /usr/bin/x86_64-w64-mingw32-g++-posix.bin \
-    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-gcc-posix.bin "$@" -fno-stack-clash-protection -fno-stack-protector\n' > /usr/bin/x86_64-w64-mingw32-gcc-posix \
-    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-g++-posix.bin "$@" -fno-stack-clash-protection -fno-stack-protector\n' > /usr/bin/x86_64-w64-mingw32-g++-posix \
-    && chmod +x /usr/bin/x86_64-w64-mingw32-gcc-posix /usr/bin/x86_64-w64-mingw32-g++-posix \
-    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-gcc-posix "$@"\n' > /usr/local/bin/x86_64-w64-mingw32-gcc \
-    && printf '#!/bin/sh\nexec /usr/bin/x86_64-w64-mingw32-g++-posix "$@"\n' > /usr/local/bin/x86_64-w64-mingw32-g++ \
-    && chmod +x /usr/local/bin/x86_64-w64-mingw32-gcc /usr/local/bin/x86_64-w64-mingw32-g++ \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-gcc \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-g++ \
-    && ln -sf /usr/bin/ccache /usr/lib/ccache/x86_64-w64-mingw32-gcc \
-    && ln -sf /usr/bin/ccache /usr/lib/ccache/x86_64-w64-mingw32-g++ \
     && rm -rf /var/lib/apt/lists/*
 
 # Prefer ccache wrappers for native and cross compilers
@@ -151,7 +135,7 @@ RUN groupadd -g 1000 user && \
     useradd -m -u 1000 -g user -d /home/user -s /bin/bash user \
     && echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/user
 
-RUN systemctl enable systemd-timedated    
+RUN systemctl enable systemd-timedated
 
 # Native AOT / .NET components — commented out until re-enabled after testing
 # RUN wget https://apt.llvm.org/llvm.sh && \
@@ -188,8 +172,21 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
 
 WORKDIR /tmp
 
+# Install Emscripten SDK under the user home directory
+ENV EMSDK=/home/user/emsdk
+ENV EMSCRIPTEN_ROOT=/home/user/emsdk/upstream/emscripten
+ARG EMSDK_VERSION=6.0.9
+
+RUN git clone https://github.com/emscripten-core/emsdk.git ${EMSDK} && \
+    cd ${EMSDK} && \
+    ./emsdk install ${EMSDK_VERSION} && \
+    ./emsdk activate ${EMSDK_VERSION} --embedded && \
+    echo '. /home/user/emsdk/emsdk_env.sh >/dev/null 2>&1' >> /home/user/.bashrc
+
+ENV PATH="${EMSDK}:${EMSCRIPTEN_ROOT}:${EMSDK}/upstream/bin:${PATH}"
+
 # Install vcpkg (shallow clone at baseline from vcpkg-configuration.json)
-ENV VCPKG_ROOT=/opt/vcpkg
+ENV VCPKG_ROOT=/home/user/vcpkg
 ARG VCPKG_BASELINE=4acadb7d732e662bbf130c4849be6d3a0aa6f6b9
 
 RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT} && \
@@ -204,54 +201,17 @@ ENV VCPKG_DEFAULT_BINARY_CACHE=/home/user/.cache/vcpkg/archives
 ENV X_VCPKG_REGISTRIES_CACHE=/home/user/.cache/vcpkg/registries
 RUN mkdir -p /home/user/.cache/vcpkg/archives /home/user/.cache/vcpkg/overlay-ports /home/user/.cache/vcpkg/registries /home/user/.cache/ccache
 
-# Copy manifest, triplet, overlay ports (dbus cross-compile fix, libsystemd system gperf), and vcpkg install script
+# Copy manifest, triplets, and overlay ports (dbus cross-compile fix, libsystemd system gperf)
 COPY vcpkg.json vcpkg-configuration.json /tmp/
 COPY ports/ /home/user/.cache/vcpkg/overlay-ports/
-COPY arm64-linux-dynamic.cmake /opt/vcpkg/triplets/community/
-COPY x64-mingw-dynamic.cmake /opt/vcpkg/triplets/community/
+COPY arm64-linux-dynamic.cmake /home/user/vcpkg/triplets/community/
+COPY wasm32-emscripten.cmake /home/user/vcpkg/triplets/community/
 
-# ---- Stage: mingw (also builds host x64-linux tools for Qt) ----
-FROM base AS mingw
+RUN chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache && \
+    chmod -R 755 /home/user/vcpkg /home/user/.cache/vcpkg
 
-ENV VCPKG_TARGET_ARCHITECTURE=x64
-ENV VCPKG_CRT_LINKAGE=dynamic
-ENV VCPKG_LIBRARY_LINKAGE=dynamic
-ENV VCPKG_CMAKE_SYSTEM_NAME=MinGW
-ENV VCPKG_FIXUP_ELF_RPATH=
-ENV VCPKG_DISABLE_METRICS=1
-ENV VCPKG_DEFAULT_TRIPLET=x64-mingw-dynamic
-ENV VCPKG_TARGET_TRIPLET=x64-mingw-dynamic
-# Release for this pass so host linux Qt deps stay under GHA's 6h job limit.
-ENV VCPKG_BUILD_TYPE=release
-# Cap parallelism: uncapped -j on GHA OOMs / drops the runner mid Qt link.
-ENV VCPKG_MAX_CONCURRENCY=3
-
-RUN vcpkg install --clean-buildtrees-after-build \
-    || (echo "===== vcpkg failure logs =====" \
-        && for f in /opt/vcpkg/buildtrees/qtbase/install-x64-mingw-dynamic-rel-out.log \
-                    /opt/vcpkg/buildtrees/qtbase/config-x64-mingw-dynamic-out.log \
-                    /opt/vcpkg/buildtrees/qtlanguageserver/install-x64-mingw-dynamic-rel-out.log \
-                    /opt/vcpkg/buildtrees/qtdeclarative/install-x64-linux-rel-out.log \
-                    /opt/vcpkg/buildtrees/qtdeclarative/install-x64-mingw-dynamic-rel-out.log; do \
-             if [ -f "$f" ]; then \
-               echo "===== FAILED / linker errors in $f =====" \
-               && grep -nE 'FAILED:|undefined reference|collect2:|error: ld|error: expected|string table overflow|file too big|internal compiler error|__stack_chk_|No space left|Killed|uiautomation' "$f" \
-                    | tail -n 80 || true \
-               && echo "===== tail $f =====" \
-               && tail -n 80 "$f"; \
-             fi; \
-           done \
-        && [ -f /tmp/vcpkg_installed/vcpkg/issue_body.md ] \
-            && echo "===== /tmp/vcpkg_installed/vcpkg/issue_body.md =====" \
-            && cat /tmp/vcpkg_installed/vcpkg/issue_body.md \
-        && false) \
-    && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
-
-ENV VCPKG_BUILD_TYPE=
-ENV VCPKG_MAX_CONCURRENCY=
-
-# ---- Stage: native x64-linux deps ----
-FROM mingw AS x64-linux
+# ---- Stage: native x64-linux deps (also produces host tools for later stages) ----
+FROM base AS x64-linux
 
 ENV VCPKG_TARGET_ARCHITECTURE=x64
 ENV VCPKG_CRT_LINKAGE=static
@@ -262,10 +222,55 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=x64-linux
 ENV VCPKG_TARGET_TRIPLET=x64-linux
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache/vcpkg && chmod -R 755 /opt/vcpkg /home/user/.cache/vcpkg
+RUN vcpkg install --clean-buildtrees-after-build && \
+    rm -rf /tmp/vcpkg_installed && \
+    chown -R user:user /home/user/vcpkg /home/user/.cache/vcpkg && \
+    chmod -R 755 /home/user/vcpkg /home/user/.cache/vcpkg
+
+# ---- Stage: wasm32-emscripten deps ----
+FROM x64-linux AS wasm
+
+ENV VCPKG_TARGET_ARCHITECTURE=wasm32
+ENV VCPKG_CRT_LINKAGE=dynamic
+ENV VCPKG_LIBRARY_LINKAGE=static
+ENV VCPKG_CMAKE_SYSTEM_NAME=Emscripten
+ENV VCPKG_FIXUP_ELF_RPATH=
+ENV VCPKG_DISABLE_METRICS=1
+ENV VCPKG_DEFAULT_TRIPLET=wasm32-emscripten
+ENV VCPKG_TARGET_TRIPLET=wasm32-emscripten
+ENV VCPKG_MAX_CONCURRENCY=3
+
+RUN . /home/user/emsdk/emsdk_env.sh && \
+    vcpkg install --clean-buildtrees-after-build \
+    || (echo "===== vcpkg failure logs =====" \
+        && if [ -f /tmp/vcpkg_installed/vcpkg/issue_body.md ]; then \
+             echo "===== /tmp/vcpkg_installed/vcpkg/issue_body.md =====" \
+             && cat /tmp/vcpkg_installed/vcpkg/issue_body.md; \
+           fi \
+        && for f in /home/user/vcpkg/buildtrees/*/install-wasm32-emscripten-*-out.log \
+                    /home/user/vcpkg/buildtrees/*/config-wasm32-emscripten-out.log; do \
+             if [ -f "$f" ]; then \
+               echo "===== FAILED / errors in $f =====" \
+               && grep -nE 'FAILED:|error:|undefined reference|Killed|No space left|FATAL_ERROR' "$f" \
+                    | tail -n 80 || true \
+               && echo "===== tail $f =====" \
+               && tail -n 80 "$f"; \
+             fi; \
+           done \
+        && false) \
+    && if vcpkg list | grep -qiE '^qt'; then \
+         echo "Qt must not be installed for wasm32-emscripten" \
+         && vcpkg list \
+         && exit 1; \
+       fi \
+    && rm -rf /tmp/vcpkg_installed \
+    && chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache \
+    && chmod -R 755 /home/user/vcpkg /home/user/.cache/vcpkg
+
+ENV VCPKG_MAX_CONCURRENCY=
 
 # ---- Stage: final image with arm64-linux-dynamic ----
-FROM x64-linux AS final
+FROM wasm AS final
 
 ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
@@ -277,7 +282,11 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=arm64-linux-dynamic
 ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
-RUN vcpkg install --clean-buildtrees-after-build && rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && chown -R user:user /opt/vcpkg /home/user/.cache && chmod -R 755 /opt/vcpkg /home/user/.cache && ccache -C
+RUN vcpkg install --clean-buildtrees-after-build && \
+    rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && \
+    chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache && \
+    chmod -R 755 /home/user/vcpkg /home/user/.cache && \
+    ccache -C
 
 # Unset VCPKG_ build-time variables after install
 ENV VCPKG_CRT_LINKAGE= \
