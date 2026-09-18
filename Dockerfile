@@ -146,12 +146,13 @@ RUN systemctl enable systemd-timedated
 #     apt-get install -y --no-install-recommends dotnet-sdk-10.0 && \
 #     rm -rf /var/lib/apt/lists/*
 
-# PowerShell (pwsh) from Microsoft Debian 12 feed
+# PowerShell (pwsh) and Microsoft ODBC Driver 18 from Microsoft Debian 12 feed
 RUN wget https://packages.microsoft.com/config/debian/12/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb && \
     dpkg -i /tmp/packages-microsoft-prod.deb && \
     rm /tmp/packages-microsoft-prod.deb && \
     apt-get update && \
     apt-get install -y --no-install-recommends powershell && \
+    ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18 && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Node.js 22.x from NodeSource (includes npm and npx)
