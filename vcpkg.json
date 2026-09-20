@@ -37,7 +37,18 @@
         "name": "grpc",
         "platform": "!emscripten"
       },
-      "imgui",
+      {
+        "name": "imgui",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "imgui",
+        "platform": "emscripten",
+        "features": [
+          "glfw-binding",
+          "opengl3-binding"
+        ]
+      },
       "imgui-node-editor",
       "imguizmo",
       "implot",
@@ -65,10 +76,7 @@
         "name": "nayuki-qr-code-generator",
         "platform": "!emscripten"
       },
-      {
-        "name": "nlohmann-json",
-        "platform": "!emscripten"
-      },
+      "nlohmann-json",
       {
         "name": "openssl",
         "platform": "!emscripten"
@@ -112,7 +120,6 @@
       },
       {
         "name": "sentry-native",
-        "version>=": "0.8.5.1",
         "platform": "!emscripten",
         "features": [
           "backend",
@@ -121,10 +128,6 @@
       }
     ],
     "overrides": [
-      {
-        "name": "cpp-httplib",
-        "version": "0.22.0"
-      },
       {
         "name": "gperf",
         "version": "3.1#7"

@@ -19,13 +19,15 @@ Native AOT / .NET support (LLVM 18 + .NET 10 SDK) is present in the Dockerfile b
 
 Build (requires BuildKit; on vcpkg failure, logs are copied to `./vcpkg-logs/`):
 
-```bash
+```bash {"terminalRows":"33"}
 docker build -t ghcr.io/lancerworldwide-oss/bookworm-vcpkg:latest .
+
 
 ```
 
 ```bash
 docker run -it ghcr.io/lancerworldwide-oss/bookworm-vcpkg:latest
+
 
 ```
 
@@ -40,12 +42,14 @@ vcpkg version
 test -d /home/user/vcpkg && echo "VCPKG_ROOT ok"
 pwsh --version
 
+
 ```
 
 Confirm WASM did not install Qt via vcpkg:
 
 ```bash
 vcpkg list | grep -i '^qt' || echo "no Qt packages (expected)"
+
 
 ```
 
@@ -69,12 +73,14 @@ dotnet --version
 clang --version
 lld --version
 
+
 ```
 
 Then run a Native AOT publish from the consuming repository:
 
 ```bash
 dotnet publish <project-path> -c Release -r linux-x64
+
 
 ```
 

@@ -177,11 +177,17 @@ ENV PATH="${EMSDK}:${EMSCRIPTEN_ROOT}:${EMSDK}/upstream/bin:${PATH}"
 
 # Install vcpkg (shallow clone at baseline from vcpkg-configuration.json)
 ENV VCPKG_ROOT=/home/user/vcpkg
-ARG VCPKG_BASELINE=4acadb7d732e662bbf130c4849be6d3a0aa6f6b9
+ARG VCPKG_BASELINE=9e593bb18ea69cc5095e012465dcd675a822ed0d
+
+# SPDX helpers in 2026.07.29 call string(JSON ... STRING_ENCODE), which needs CMake 4.3+.
+# Bookworm ships ~3.25; overlay the upstream compat shim from b558d0140783 (2026-08-17).
+ARG VCPKG_SPDX_FIX=b558d014078372de4dd1252dbbb1e252294e1b69
 
 RUN git clone https://github.com/microsoft/vcpkg.git ${VCPKG_ROOT} && \
     cd ${VCPKG_ROOT} && \
     git checkout ${VCPKG_BASELINE} && \
+    curl -fsSL "https://raw.githubusercontent.com/microsoft/vcpkg/${VCPKG_SPDX_FIX}/scripts/cmake/z_vcpkg_spdx.cmake" \
+        -o scripts/cmake/z_vcpkg_spdx.cmake && \
     ./bootstrap-vcpkg.sh -disableMetrics
 
 ENV PATH="${VCPKG_ROOT}:${PATH}"

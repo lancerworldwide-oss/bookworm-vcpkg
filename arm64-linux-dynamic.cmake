@@ -15,3 +15,15 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE BOTH)
 if(PORT STREQUAL "dbus")
     set(VCPKG_CMAKE_CONFIGURE_OPTIONS "-DDBUS_SESSION_SOCKET_DIR=/tmp")
 endif()
+
+# vcpkg-make drops default --prefix when VCPKG_FORCE_SYSTEM_BINARIES is set
+# (microsoft/vcpkg#52050). Explicit per-config options still reach configure.
+set(VCPKG_MAKE_CONFIGURE_OPTIONS_RELEASE
+    "--prefix=${CURRENT_INSTALLED_DIR}"
+    "--libdir=\\\${prefix}/lib"
+)
+set(VCPKG_MAKE_CONFIGURE_OPTIONS_DEBUG
+    "--prefix=${CURRENT_INSTALLED_DIR}/debug"
+    "--libdir=\\\${prefix}/lib"
+    "--includedir=\\\${prefix}/../include"
+)
