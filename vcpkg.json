@@ -37,21 +37,7 @@
         "name": "grpc",
         "platform": "!emscripten"
       },
-      {
-        "name": "imgui",
-        "platform": "!emscripten"
-      },
-      {
-        "name": "imgui",
-        "platform": "emscripten",
-        "features": [
-          "glfw-binding",
-          "opengl3-binding"
-        ]
-      },
-      "imgui-node-editor",
-      "imguizmo",
-      "implot",
+      "lvgl",
       {
         "name": "libarchive",
         "platform": "!emscripten"
