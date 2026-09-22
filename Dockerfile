@@ -45,6 +45,13 @@ RUN dpkg --add-architecture arm64 && \
     libcap-dev:arm64 \
     libdrm-dev \
     libdrm-dev:arm64 \
+    libevdev-dev \
+    libevdev-dev:arm64 \
+    libinput-dev \
+    libinput-dev:arm64 \
+    libwayland-dev \
+    libwayland-dev:arm64 \
+    wayland-protocols \
     libcurl4-openssl-dev \
     libcurl4-openssl-dev:arm64 \
     libdbus-1-dev \
