@@ -21,14 +21,10 @@ Build (requires BuildKit; on vcpkg failure, logs are copied to `./vcpkg-logs/`):
 
 ```bash {"terminalRows":"33"}
 docker build -t ghcr.io/lancerworldwide-oss/bookworm-vcpkg:latest .
-
-
 ```
 
 ```bash
 docker run -it ghcr.io/lancerworldwide-oss/bookworm-vcpkg:latest
-
-
 ```
 
 ## Toolchain verification

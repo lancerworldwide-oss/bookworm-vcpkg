@@ -73,6 +73,10 @@
         "platform": "!emscripten"
       },
       {
+        "name": "nanodbc",
+        "platform": "!emscripten"
+      },
+        {
         "name": "nayuki-qr-code-generator",
         "platform": "!emscripten"
       },

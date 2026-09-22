@@ -244,7 +244,6 @@ RUN . /home/user/emsdk/emsdk_env.sh && \
 # ---- Stage: final image with arm64-linux-dynamic ----
 FROM wasm AS final
 
-ENV VCPKG_FORCE_SYSTEM_BINARIES=1
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
 ENV VCPKG_CRT_LINKAGE=dynamic
 ENV VCPKG_LIBRARY_LINKAGE=dynamic
@@ -254,7 +253,10 @@ ENV VCPKG_DISABLE_METRICS=1
 ENV VCPKG_DEFAULT_TRIPLET=arm64-linux-dynamic
 ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 
-RUN vcpkg install --clean-buildtrees-after-build && \
+# FORCE_SYSTEM_BINARIES only for this arm64 install (cross tools). Do not leave it as
+# a persistent ENV: empty ENV VAR= is still defined and breaks native x64 vcpkg-make
+# (microsoft/vcpkg#52050) when cmake --preset runs in the published image.
+RUN VCPKG_FORCE_SYSTEM_BINARIES=1 vcpkg install --clean-buildtrees-after-build && \
     rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && \
     chown -R user:user /home/user/vcpkg /home/user/emsdk /home/user/.cache && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache && \
@@ -272,7 +274,8 @@ RUN wget https://apt.llvm.org/llvm.sh && \
     rm -rf llvm.sh && \
     rm -rf /var/lib/apt/lists/*
 
-# Unset VCPKG_ build-time variables after install
+# Clear VCPKG_ build-time variables after install (omit FORCE_SYSTEM_BINARIES so it
+# stays truly unset for native x64 configures in the running container).
 ENV VCPKG_CRT_LINKAGE= \
     VCPKG_LIBRARY_LINKAGE= \
     VCPKG_CMAKE_SYSTEM_NAME= \
@@ -280,7 +283,6 @@ ENV VCPKG_CRT_LINKAGE= \
     VCPKG_DISABLE_METRICS= \
     VCPKG_DEFAULT_TRIPLET= \
     VCPKG_TARGET_TRIPLET= \
-    VCPKG_FORCE_SYSTEM_BINARIES= \
     VCPKG_TARGET_ARCHITECTURE=
 
 WORKDIR /workspace
