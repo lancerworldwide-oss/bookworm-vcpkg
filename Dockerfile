@@ -45,6 +45,18 @@ RUN dpkg --add-architecture arm64 && \
     libcap-dev:arm64 \
     libdrm-dev \
     libdrm-dev:arm64 \
+    libavcodec-dev \
+    libavcodec-dev:arm64 \
+    libavformat-dev \
+    libavformat-dev:arm64 \
+    libavutil-dev \
+    libavutil-dev:arm64 \
+    libswscale-dev \
+    libswscale-dev:arm64 \
+    libgstreamer1.0-dev \
+    libgstreamer1.0-dev:arm64 \
+    libgstreamer-plugins-base1.0-dev \
+    libgstreamer-plugins-base1.0-dev:arm64 \
     libevdev-dev \
     libevdev-dev:arm64 \
     libinput-dev \
