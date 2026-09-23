@@ -56,7 +56,8 @@ RUN dpkg --add-architecture arm64 && \
     libgstreamer1.0-dev \
     libgstreamer1.0-dev:arm64 \
     libgstreamer-plugins-base1.0-dev \
-    libgstreamer-plugins-base1.0-dev:arm64 \
+    libgstreamer-plugins-base1.0-0:arm64 \
+    libgstreamer-gl1.0-0:arm64 \
     libevdev-dev \
     libevdev-dev:arm64 \
     libinput-dev \
@@ -144,7 +145,15 @@ RUN dpkg --add-architecture arm64 && \
     && update-binfmts --enable \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-gcc \
     && ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-g++ \
+    && cd /tmp \
+    && apt-get download libgstreamer-plugins-base1.0-dev:arm64 \
+    && dpkg-deb -x libgstreamer-plugins-base1.0-dev_*_arm64.deb / \
+    && rm -f libgstreamer-plugins-base1.0-dev_*_arm64.deb \
     && rm -rf /var/lib/apt/lists/*
+
+# libgstreamer-plugins-base1.0-dev is not Multi-Arch: same, so amd64 and arm64
+# -dev cannot be co-installed. The arm64 -dev is extracted above (not dpkg -i)
+# to provide aarch64 .so linker names, pkg-config files, and gstglconfig.h.
 
 # Prefer ccache wrappers for native and cross compilers
 ENV PATH="/usr/lib/ccache:${PATH}"
