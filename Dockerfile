@@ -165,16 +165,18 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
     printf 'Package: cmake cmake-data\nPin: origin apt.kitware.com\nPin-Priority: 990\n' > /etc/apt/preferences.d/kitware-cmake && \
     rm -rf /var/lib/apt/lists/*
 
-RUN wget https://apt.llvm.org/llvm.sh && \
-    chmod +x llvm.sh && \
-    ./llvm.sh 18 && \
-    apt install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
+# LLVM 18 from apt.llvm.org. Pin amd64: multiarch is enabled and llvm.sh is an
+# unmaintained entry point for 18 (apt.llvm.org documents only 21/22 on Bookworm).
+RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc >/dev/null && \
+    echo 'deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/apt.llvm.org.asc] https://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-18 main' > /etc/apt/sources.list.d/llvm-toolchain-bookworm-18.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 && \
     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 && \
     update-alternatives --install /usr/bin/lld lld /usr/bin/lld-18 100 && \
     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
     update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
-    rm -rf llvm.sh /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
 # libgstreamer-plugins-base1.0-dev is not Multi-Arch: same, so amd64 and arm64
 # -dev cannot be co-installed. The arm64 -dev is extracted above (not dpkg -i)
