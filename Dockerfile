@@ -23,7 +23,6 @@ RUN dpkg --add-architecture arm64 && \
     ca-certificates \
     ccache \
     clazy \
-    cmake \
     cppcheck \
     curl \
     dbus \
@@ -149,6 +148,20 @@ RUN dpkg --add-architecture arm64 && \
     && apt-get download libgstreamer-plugins-base1.0-dev:arm64 \
     && dpkg-deb -x libgstreamer-plugins-base1.0-dev_*_arm64.deb / \
     && rm -f libgstreamer-plugins-base1.0-dev_*_arm64.deb \
+    && rm -rf /var/lib/apt/lists/*
+
+# Kitware CMake from apt.kitware.com (Ubuntu jammy suite — no bookworm suite exists).
+# Jammy glibc 2.35 runs on Bookworm 2.36; noble/resolute need newer glibc. Pin amd64
+# so multiarch apt does not fetch a missing arm64 kitware index.
+RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
+        | gpg --dearmor -o /usr/share/keyrings/kitware-archive-keyring.gpg \
+    && echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' \
+        > /etc/apt/sources.list.d/kitware.list \
+    && apt-get update \
+    && rm /usr/share/keyrings/kitware-archive-keyring.gpg \
+    && apt-get install -y --no-install-recommends kitware-archive-keyring cmake \
+    && printf 'Package: cmake cmake-data\nPin: origin apt.kitware.com\nPin-Priority: 990\n' \
+        > /etc/apt/preferences.d/kitware-cmake \
     && rm -rf /var/lib/apt/lists/*
 
 # libgstreamer-plugins-base1.0-dev is not Multi-Arch: same, so amd64 and arm64
