@@ -30,8 +30,7 @@
         "platform": "!emscripten"
       },
       {
-        "name": "ftxui",
-        "platform": "!emscripten"
+        "name": "imgui"
       },
       {
         "name": "grpc",
@@ -68,11 +67,10 @@
       },
       "nlohmann-json",
       {
-        "name": "openssl",
-        "platform": "!emscripten"
+        "name": "ogre"
       },
-      {
-        "name": "paho-mqtt",
+        {
+        "name": "openssl",
         "platform": "!emscripten"
       },
       {
