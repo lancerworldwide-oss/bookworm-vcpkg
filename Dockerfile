@@ -91,6 +91,7 @@ RUN dpkg --add-architecture arm64 && \
     libx11-dev:arm64 \
     libx11-xcb-dev \
     libx11-xcb-dev:arm64 \
+    libxaw7-dev \
     libxext-dev \
     libxext-dev:arm64 \
     libxi-dev \
