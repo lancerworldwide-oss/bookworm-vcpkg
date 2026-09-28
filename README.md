@@ -15,6 +15,7 @@ The base image also includes:
 - vcpkg at `/home/user/vcpkg` (`VCPKG_ROOT=/home/user/vcpkg`), checked out at the baseline in `vcpkg-configuration.json` (full clone, then checkout)
 - LLVM 18, with unversioned `clang`, `clang++`, `lld`, `clang-format`, and `clang-tidy`
 - Microsoft ODBC Driver 18 and Node.js 22
+- mdBook 0.4.44 at `/usr/local/bin/mdbook`
 
 Each triplet install writes `/tmp/vcpkg_installed` and the Dockerfile removes that tree. Precompiled packages are kept in the binary cache at `/home/user/.cache/vcpkg/archives`. `ports/` is copied to the overlay path in `vcpkg-configuration.json`; no overlay port recipes are checked in. The dbus session socket dir for arm64 cross builds is set in `arm64-linux-dynamic.cmake`.
 
@@ -41,6 +42,7 @@ vcpkg version
 test -d /home/user/vcpkg && echo "VCPKG_ROOT ok"
 clang --version
 lld --version
+mdbook --version
 ```
 
 `vcpkg list` in a new container is empty because `/tmp/vcpkg_installed` is deleted after each stage. Qt ports are rejected by `wasm32-emscripten.cmake` if a Qt port is requested for that triplet. System Qt6 development packages are still installed with apt.

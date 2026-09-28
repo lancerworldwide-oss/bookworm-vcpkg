@@ -328,6 +328,15 @@ ENV VCPKG_CRT_LINKAGE= \
     VCPKG_TARGET_TRIPLET= \
     VCPKG_TARGET_ARCHITECTURE=
 
+# mdBook static binary for the amd64 image (Kitware and LLVM are amd64-only).
+ARG MDBOOK_VERSION=0.4.44
+RUN curl -fsSL -o /tmp/mdbook.tar.gz \
+      "https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz" && \
+    tar -xzf /tmp/mdbook.tar.gz -C /tmp && \
+    install -m 755 /tmp/mdbook /usr/local/bin/mdbook && \
+    rm -f /tmp/mdbook.tar.gz /tmp/mdbook && \
+    mdbook --version
+
 WORKDIR /workspace
 
 VOLUME ["/run", "/run/lock"]
