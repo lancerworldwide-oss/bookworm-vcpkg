@@ -36,7 +36,21 @@
         "name": "grpc",
         "platform": "!emscripten"
       },
-      "lvgl",
+      {
+        "name": "imgui",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "imgui",
+        "platform": "emscripten",
+        "features": [
+          "glfw-binding",
+          "opengl3-binding"
+        ]
+      },
+      "imgui-node-editor",
+      "imguizmo",
+      "implot",
       {
         "name": "libarchive",
         "platform": "!emscripten"
@@ -52,7 +66,8 @@
       {
         "name": "libusb",
         "platform": "!emscripten"
-      },
+      },  
+      "lvgl",
       {
         "name": "ms-gsl",
         "platform": "!emscripten"
@@ -67,9 +82,6 @@
       },
       "nlohmann-json",
       {
-        "name": "ogre"
-      },
-        {
         "name": "openssl",
         "platform": "!emscripten"
       },
