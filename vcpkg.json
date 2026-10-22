@@ -2,7 +2,7 @@
     "dependencies": [
       {
         "name": "angelscript",
-        "platform": "!emscripten & !mingw"
+        "platform": "!emscripten"
       },
       {
         "name": "cpp-httplib",
