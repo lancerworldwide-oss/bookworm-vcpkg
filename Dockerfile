@@ -1,5 +1,6 @@
 # Raspberry Pi 5 cross-compilation devcontainer base image
-# Precompiles vcpkg dependencies for x64-linux, wasm32-emscripten, and arm64-linux-dynamic
+# Precompiles vcpkg dependencies for x64-linux, wasm32-emscripten,
+# x64-mingw-static, and arm64-linux-dynamic
 
 FROM debian:bookworm-slim AS base
 
@@ -33,7 +34,9 @@ RUN dpkg --add-architecture arm64 && \
     doxygen \
     flex \
     g++-aarch64-linux-gnu \
+    g++-mingw-w64-x86-64 \
     gcc-aarch64-linux-gnu \
+    gcc-mingw-w64-x86-64 \
     gcovr \
     git \
     gnupg \
@@ -113,6 +116,7 @@ RUN dpkg --add-architecture arm64 && \
     lsb-release \
     make \
     meson \
+    mingw-w64-tools \
     ninja-build \
     patchelf \
     pkg-config \
@@ -145,8 +149,12 @@ RUN dpkg --add-architecture arm64 && \
     zlib1g-dev \
     zip && \
     update-binfmts --enable && \
+    update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix && \
+    update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix && \
     ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-gcc && \
     ln -sf /usr/bin/ccache /usr/lib/ccache/aarch64-linux-gnu-g++ && \
+    ln -sf /usr/bin/ccache /usr/lib/ccache/x86_64-w64-mingw32-gcc && \
+    ln -sf /usr/bin/ccache /usr/lib/ccache/x86_64-w64-mingw32-g++ && \
     cd /tmp && \
     apt-get download libgstreamer-plugins-base1.0-dev:arm64 && \
     dpkg-deb -x libgstreamer-plugins-base1.0-dev_*_arm64.deb / && \
@@ -295,6 +303,30 @@ RUN . /home/user/emsdk/emsdk_env.sh && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache && \
     ccache -C
 
+# ---- Stage: x64-mingw-static deps (parallel with wasm; host tools from x64-linux) ----
+FROM x64-linux AS mingw
+
+# Do not track PATH in the ABI. The published image adds emsdk to PATH.
+COPY x64-mingw-static.cmake /home/user/vcpkg/triplets/community/
+
+ENV VCPKG_TARGET_ARCHITECTURE=x64
+ENV VCPKG_CRT_LINKAGE=dynamic
+ENV VCPKG_LIBRARY_LINKAGE=static
+ENV VCPKG_CMAKE_SYSTEM_NAME=MinGW
+ENV VCPKG_FIXUP_ELF_RPATH=
+ENV VCPKG_DISABLE_METRICS=1
+ENV VCPKG_DEFAULT_TRIPLET=x64-mingw-static
+ENV VCPKG_TARGET_TRIPLET=x64-mingw-static
+ENV VCPKG_DEFAULT_HOST_TRIPLET=x64-linux
+
+# Do not set VCPKG_FORCE_SYSTEM_BINARIES: MinGW finds x86_64-w64-mingw32-gcc on
+# PATH, and the flag would change the package ABI.
+RUN vcpkg install --clean-buildtrees-after-build && \
+    rm -rf /tmp/vcpkg_installed && \
+    chown -R user:user /home/user && \
+    chmod -R 755 /home/user/vcpkg /home/user/.cache && \
+    ccache -C
+
 # ---- Stage: final image with arm64-linux-dynamic ----
 FROM wasm AS final
 
@@ -310,6 +342,11 @@ ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 # FORCE_SYSTEM_BINARIES only for this arm64 install (cross tools). Do not leave it as
 # a persistent ENV: empty ENV VAR= is still defined and breaks native x64 vcpkg-make
 # (microsoft/vcpkg#52050) when cmake --preset runs in the published image.
+# The flag also forces cmake|0 into every package ABI. Consuming projects must set
+# VCPKG_FORCE_SYSTEM_BINARIES=1 again on arm64 configures (see arm64-linux presets)
+# so restored archives match; leave it unset for x64, wasm, and mingw.
+COPY --from=mingw /home/user/.cache/vcpkg/archives/ /home/user/.cache/vcpkg/archives/
+COPY x64-mingw-static.cmake /home/user/vcpkg/triplets/community/
 RUN VCPKG_FORCE_SYSTEM_BINARIES=1 vcpkg install --clean-buildtrees-after-build && \
     rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && \
     chown -R user:user /home && \

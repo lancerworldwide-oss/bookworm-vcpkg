@@ -2,7 +2,7 @@
     "dependencies": [
       {
         "name": "angelscript",
-        "platform": "!emscripten"
+        "platform": "!emscripten & !mingw"
       },
       {
         "name": "cpp-httplib",
@@ -34,7 +34,7 @@
       },
       {
         "name": "grpc",
-        "platform": "!emscripten"
+        "platform": "!emscripten & !mingw"
       },
       {
         "name": "imgui",
@@ -67,14 +67,17 @@
         "name": "libusb",
         "platform": "!emscripten"
       },  
-      "lvgl",
+      {
+        "name": "lvgl",
+        "platform": "!mingw"
+      },
       {
         "name": "ms-gsl",
         "platform": "!emscripten"
       },
       {
         "name": "nanodbc",
-        "platform": "!emscripten"
+        "platform": "!emscripten & !mingw"
       },
         {
         "name": "nayuki-qr-code-generator",
@@ -116,11 +119,11 @@
       },
       {
         "name": "tbb",
-        "platform": "!emscripten"
+        "platform": "!emscripten & !mingw"
       },
       {
         "name": "sentry-native",
-        "platform": "!emscripten",
+        "platform": "!emscripten & !mingw",
         "features": [
           "backend",
           "transport"
