@@ -114,6 +114,10 @@
         "platform": "!emscripten"
       },
       {
+        "name": "swaggercpp",
+        "platform": "!emscripten"
+      },
+      {
         "name": "tbb",
         "platform": "!emscripten & !mingw"
       },

@@ -8,8 +8,8 @@
     {
       "kind": "git",
       "repository": "https://github.com/lancerworldwide-oss/vcpkg-updates.git",
-      "baseline": "a573374f43d0646b28676c400eefa4da037a9e62",
-      "packages": [ "angelscript", "cpptotp", "libstatgrab", "lvgl", "sentry-native" ]
+      "baseline": "a13d168292f5e0997dede98a33f77c93258296c5",
+      "packages": [ "angelscript", "cpptotp", "libstatgrab", "lvgl", "sentry-native", "swaggercpp" ]
     }
   ],
   "overlay-ports": ["/home/user/.cache/vcpkg/overlay-ports"]
