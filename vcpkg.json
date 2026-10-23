@@ -64,10 +64,6 @@
         "platform": "linux & !emscripten"
       },
       {
-        "name": "libusb",
-        "platform": "!emscripten"
-      },  
-      {
         "name": "lvgl",
         "platform": "!mingw"
       },
