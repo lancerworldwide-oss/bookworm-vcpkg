@@ -243,11 +243,11 @@ ENV VCPKG_DEFAULT_BINARY_CACHE=/home/user/.cache/vcpkg/archives
 ENV X_VCPKG_REGISTRIES_CACHE=/home/user/.cache/vcpkg/registries
 RUN mkdir -p /home/user/.cache/vcpkg/archives /home/user/.cache/vcpkg/overlay-ports /home/user/.cache/vcpkg/registries /home/user/.cache/ccache
 
-# Manifest and community triplets. ports/ is the overlay-ports path named in
-# vcpkg-configuration.json; no port recipes are checked in. The dbus session
-# socket dir for cross builds is set in arm64-linux-dynamic.cmake.
+# Manifest and community triplets. The overlay-ports directory named in
+# vcpkg-configuration.json is created empty; grpc 1.81.1#1 comes from the
+# vcpkg-updates registry. The dbus session socket dir for cross builds is
+# set in arm64-linux-dynamic.cmake.
 COPY vcpkg.json vcpkg-configuration.json /tmp/
-COPY ports/ /home/user/.cache/vcpkg/overlay-ports/
 COPY arm64-linux-dynamic.cmake /home/user/vcpkg/triplets/community/
 COPY wasm32-emscripten.cmake /home/user/vcpkg/triplets/community/
 
