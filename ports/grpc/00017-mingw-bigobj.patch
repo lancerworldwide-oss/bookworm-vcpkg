@@ -1,0 +1,11 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -343,6 +343,7 @@ if(MSVC)
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /opt:ref /opt:icf /pdbcompress")
+ endif()
+ if (MINGW)
+   add_definitions(-D_WIN32_WINNT=0x600)
++  add_compile_options(-Wa,-mbig-obj)
+ endif()
+ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_gRPC_C_CXX_FLAGS}")
