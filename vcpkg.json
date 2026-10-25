@@ -30,27 +30,9 @@
         "platform": "!emscripten"
       },
       {
-        "name": "imgui"
-      },
-      {
         "name": "grpc",
-        "platform": "!emscripten & !mingw"
-      },
-      {
-        "name": "imgui",
         "platform": "!emscripten"
       },
-      {
-        "name": "imgui",
-        "platform": "emscripten",
-        "features": [
-          "glfw-binding",
-          "opengl3-binding"
-        ]
-      },
-      "imgui-node-editor",
-      "imguizmo",
-      "implot",
       {
         "name": "libarchive",
         "platform": "!emscripten"
@@ -73,7 +55,7 @@
       },
       {
         "name": "nanodbc",
-        "platform": "!emscripten & !mingw"
+        "platform": "!emscripten"
       },
         {
         "name": "nayuki-qr-code-generator",
@@ -131,6 +113,10 @@
       }
     ],
     "overrides": [
+      {
+        "name": "cpp-httplib",
+        "version": "0.51.0"
+      },
       {
         "name": "gperf",
         "version": "3.1#7"
