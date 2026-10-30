@@ -8,7 +8,7 @@
     {
       "kind": "git",
       "repository": "https://github.com/lancerworldwide-oss/vcpkg-updates.git",
-      "baseline": "d12733af6035920d109118e5b82a85a2abd6ea48",
+      "baseline": "542007fc035110ac4775373c7acca80e282fee68",
       "packages": [ "angelscript", "cpptotp", "grpc", "libstatgrab", "lvgl", "nanodbc", "sentry-native", "swaggercpp" ]
     }
   ],

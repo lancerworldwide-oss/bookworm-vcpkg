@@ -45,10 +45,7 @@
         "name": "libsystemd",
         "platform": "linux & !emscripten"
       },
-      {
-        "name": "lvgl",
-        "platform": "!mingw"
-      },
+      "lvgl",
       {
         "name": "ms-gsl",
         "platform": "!emscripten"
