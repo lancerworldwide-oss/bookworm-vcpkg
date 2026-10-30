@@ -117,6 +117,7 @@ RUN dpkg --add-architecture arm64 && \
     make \
     meson \
     mingw-w64-tools \
+    nasm \
     ninja-build \
     patchelf \
     pkg-config \
