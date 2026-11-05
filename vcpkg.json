@@ -5,6 +5,10 @@
         "platform": "!emscripten"
       },
       {
+        "name": "asmjit",
+        "platform": "(x64 | arm64) & !emscripten"
+      },
+      {
         "name": "cpp-httplib",
         "platform": "!emscripten"
       },

@@ -94,6 +94,32 @@ RUN dpkg --add-architecture arm64 && \
     libx11-dev:arm64 \
     libx11-xcb-dev \
     libx11-xcb-dev:arm64 \
+    libxcursor1 \
+    libxcursor1:arm64 \
+    libgtk-3-0 \
+    libgtk-3-0:arm64 \
+    libatk1.0-0 \
+    libatk1.0-0:arm64 \
+    libgtk-4-1 \
+    libgtk-4-1:arm64 \
+    libgraphene-1.0-0 \
+    libgraphene-1.0-0:arm64 \
+    libwoff1 \
+    libwoff1:arm64 \
+    libgstreamer-plugins-bad1.0-0 \
+    libgstreamer-plugins-bad1.0-0:arm64 \
+    libflite1 \
+    libflite1:arm64 \
+    libharfbuzz-icu0 \
+    libharfbuzz-icu0:arm64 \
+    libenchant-2-2 \
+    libenchant-2-2:arm64 \
+    libsecret-1-0 \
+    libsecret-1-0:arm64 \
+    libhyphen0 \
+    libhyphen0:arm64 \
+    libmanette-0.2-0 \
+    libmanette-0.2-0:arm64 \
     libxaw7-dev \
     libxext-dev \
     libxext-dev:arm64 \
@@ -180,12 +206,13 @@ RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/nul
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc >/dev/null && \
     echo 'deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/apt.llvm.org.asc] https://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-18 main' > /etc/apt/sources.list.d/llvm-toolchain-bookworm-18.list && \
     apt-get update && \
-    apt-get install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 && \
+    apt-get install -y --no-install-recommends clang-18 clang-format-18 clang-tidy-18 lld-18 clangd-18 && \
     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 && \
     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 && \
     update-alternatives --install /usr/bin/lld lld /usr/bin/lld-18 100 && \
     update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 && \
     update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 && \
+    update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-18 100 && \
     rm -rf /var/lib/apt/lists/*
 
 # libgstreamer-plugins-base1.0-dev is not Multi-Arch: same, so amd64 and arm64
