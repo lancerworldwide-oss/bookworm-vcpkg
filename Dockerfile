@@ -172,6 +172,9 @@ RUN dpkg --add-architecture arm64 && \
     gdb-multiarch \
     valgrind \
     wget \
+    x11-utils \
+    xauth \
+    xvfb \
     xz-utils \
     zlib1g-dev \
     zip && \
