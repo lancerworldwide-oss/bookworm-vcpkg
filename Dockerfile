@@ -282,7 +282,7 @@ COPY wasm32-emscripten.cmake /home/user/vcpkg/triplets/community/
 RUN chown -R user:user /home/user && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache
 
-# ---- Stage: native x64-linux deps (also produces host tools for later stages) ----
+# ---- Stage: native x64-linux deps ----
 FROM base AS x64-linux
 
 ENV VCPKG_TARGET_ARCHITECTURE=x64
@@ -299,8 +299,8 @@ RUN vcpkg install --clean-buildtrees-after-build && \
     chown -R user:user /home/user && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache
 
-# ---- Stage: wasm32-emscripten deps ----
-FROM x64-linux AS wasm
+# ---- Stage: wasm32-emscripten deps (parallel with x64-linux, mingw, arm64) ----
+FROM base AS wasm
 
 ENV VCPKG_TARGET_ARCHITECTURE=wasm32
 ENV VCPKG_CRT_LINKAGE=dynamic
@@ -331,8 +331,10 @@ RUN . /home/user/emsdk/emsdk_env.sh && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache && \
     ccache -C
 
-# ---- Stage: x64-mingw-static deps (parallel with wasm; host tools from x64-linux) ----
-FROM x64-linux AS mingw
+# ---- Stage: x64-mingw-static deps ----
+# Parallel with x64-linux, wasm, arm64; builds its own x64-linux host tools
+# instead of inheriting them from the x64-linux stage.
+FROM base AS mingw
 
 # Do not track PATH in the ABI. The published image adds emsdk to PATH.
 COPY x64-mingw-static.cmake /home/user/vcpkg/triplets/community/
@@ -355,8 +357,10 @@ RUN vcpkg install --clean-buildtrees-after-build && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache && \
     ccache -C
 
-# ---- Stage: final image with arm64-linux-dynamic ----
-FROM wasm AS final
+# ---- Stage: arm64-linux-dynamic deps ----
+# Parallel with x64-linux, wasm, mingw; builds its own x64-linux host tools
+# instead of inheriting them from the x64-linux stage.
+FROM base AS arm64
 
 ENV VCPKG_TARGET_ARCHITECTURE=arm64
 ENV VCPKG_CRT_LINKAGE=dynamic
@@ -373,25 +377,48 @@ ENV VCPKG_TARGET_TRIPLET=arm64-linux-dynamic
 # The flag also forces cmake|0 into every package ABI. Consuming projects must set
 # VCPKG_FORCE_SYSTEM_BINARIES=1 again on arm64 configures (see arm64-linux presets)
 # so restored archives match; leave it unset for x64, wasm, and mingw.
-COPY --from=mingw /home/user/.cache/vcpkg/archives/ /home/user/.cache/vcpkg/archives/
-COPY x64-mingw-static.cmake /home/user/vcpkg/triplets/community/
 RUN VCPKG_FORCE_SYSTEM_BINARIES=1 vcpkg install --clean-buildtrees-after-build && \
-    rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && \
-    chown -R user:user /home && \
+    rm -rf /tmp/vcpkg_installed && \
+    chown -R user:user /home/user && \
     chmod -R 755 /home/user/vcpkg /home/user/.cache && \
     ccache -C
-    
-# Set the build-time VCPKG_* variables to empty strings. They remain defined;
-# an empty ENV does not unset a variable. FORCE_SYSTEM_BINARIES is omitted so it
-# stays unset for native x64 configures in the running container.
-ENV VCPKG_CRT_LINKAGE= \
-    VCPKG_LIBRARY_LINKAGE= \
-    VCPKG_CMAKE_SYSTEM_NAME= \
-    VCPKG_FIXUP_ELF_RPATH= \
-    VCPKG_DISABLE_METRICS= \
-    VCPKG_DEFAULT_TRIPLET= \
-    VCPKG_TARGET_TRIPLET= \
-    VCPKG_TARGET_ARCHITECTURE=
+
+# ---- Stage: final image (merges the four parallel triplet stages) ----
+FROM base AS final
+
+# Emscripten SDK built by the wasm stage. Re-declare its env here: this stage
+# descends from base, not from wasm, so it inherits neither the PATH entry nor
+# the .bashrc line the wasm stage added.
+ENV EMSDK=/home/user/emsdk
+ENV EMSCRIPTEN_ROOT=/home/user/emsdk/upstream/emscripten
+COPY --from=wasm /home/user/emsdk /home/user/emsdk
+RUN echo '. /home/user/emsdk/emsdk_env.sh >/dev/null 2>&1' >> /home/user/.bashrc
+ENV PATH="${EMSDK}:${EMSCRIPTEN_ROOT}:${EMSDK}/upstream/bin:${PATH}"
+
+# Do not track PATH in the ABI. The published image adds emsdk to PATH.
+COPY x64-mingw-static.cmake /home/user/vcpkg/triplets/community/
+
+# Merge the binary caches of all four triplet stages in a single layer. Each
+# cross stage rebuilt the x64-linux host tools, so the four caches overlap;
+# copying them in one RUN stores each identical archive zip only once, where
+# four COPY --from layers would re-store the duplicates in every layer.
+RUN --mount=type=bind,from=x64-linux,source=/home/user/.cache/vcpkg/archives,target=/tmp/vcpkg-cache/x64-linux \
+    --mount=type=bind,from=wasm,source=/home/user/.cache/vcpkg/archives,target=/tmp/vcpkg-cache/wasm \
+    --mount=type=bind,from=mingw,source=/home/user/.cache/vcpkg/archives,target=/tmp/vcpkg-cache/mingw \
+    --mount=type=bind,from=arm64,source=/home/user/.cache/vcpkg/archives,target=/tmp/vcpkg-cache/arm64 \
+    cp -a /tmp/vcpkg-cache/x64-linux/. /home/user/.cache/vcpkg/archives/ && \
+    cp -a /tmp/vcpkg-cache/wasm/. /home/user/.cache/vcpkg/archives/ && \
+    cp -a /tmp/vcpkg-cache/mingw/. /home/user/.cache/vcpkg/archives/ && \
+    cp -a /tmp/vcpkg-cache/arm64/. /home/user/.cache/vcpkg/archives/ && \
+    rm -rf /tmp/vcpkg.json /tmp/vcpkg_installed && \
+    chown -R user:user /home/user && \
+    chmod -R 755 /home/user/vcpkg /home/user/.cache && \
+    ccache -C
+
+# No build-time VCPKG_* triplet variables need resetting here: this stage
+# descends from base, which never set them, so they stay unset in the
+# published image (in particular VCPKG_FORCE_SYSTEM_BINARIES, which must
+# remain unset for native x64 configures in the running container).
 
 # mdBook static binary for the amd64 image (Kitware and LLVM are amd64-only).
 ARG MDBOOK_VERSION=0.4.44
