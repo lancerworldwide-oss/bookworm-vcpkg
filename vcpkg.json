@@ -76,6 +76,14 @@
         "platform": "!emscripten"
       },
       {
+        "name": "libxml2",
+        "platform": "!emscripten"
+      },
+      {
+        "name": "libxslt",
+        "platform": "!emscripten"
+      },
+      {
         "name": "sdbus-cpp",
         "platform": "linux & !emscripten"
       },
